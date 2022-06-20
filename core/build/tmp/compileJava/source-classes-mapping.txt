@@ -1,4 +1,15 @@
-com/ideograph/game/Game.java
- com.ideograph.game.Game
 com/ideograph/game/level_tutorial.java
  com.ideograph.game.level_tutorial
+com/ideograph/game/Item.java
+ com.ideograph.game.Food
+ com.ideograph.game.Item
+ com.ideograph.game.Weapon
+com/ideograph/game/owo.java
+ com.ideograph.game.ExtraBehavior
+ com.ideograph.game.owo
+com/ideograph/game/character.java
+ com.ideograph.game.character
+com/ideograph/game/movement.java
+ com.ideograph.game.movement
+com/ideograph/game/Game.java
+ com.ideograph.game.Game

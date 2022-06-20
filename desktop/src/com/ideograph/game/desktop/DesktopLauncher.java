@@ -8,13 +8,14 @@ import com.ideograph.game.level_tutorial;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
-		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.foregroundFPS = 60;
-		config.title = "Ideograph Adventure";
-		config.width = 1920;
-		config.height = 1080;
-		config.resizable = false;
-		new LwjglApplication(new level_tutorial(), config);
-		new LwjglApplication(new Game(), config);
-	}
+            LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+            config.foregroundFPS = 480;
+            config.title = "Ideograph Adventure";
+            config.width = 1920;
+            config.height = 1080;
+            config.resizable = false;
+            new LwjglApplication(new Game(), config);
+            //new LwjglApplication(new level_tutorial(), config);
+            //new LwjglApplication(new Game(), config);
+    }
 }

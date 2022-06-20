@@ -17,21 +17,27 @@ public class level_tutorial extends ApplicationAdapter {
 
 
     @Override
-    public void create(){
+    public void create() {
         camera = new OrthographicCamera();
-        camera.setToOrtho(false,1920,1080);
+        camera.setToOrtho(false, 1920, 1080);
         tiledmap = new TmxMapLoader().load("tutorial.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledmap);
     }
 
+
+    public void new_render() {
+        //camera.update();
+        tiledMapRenderer.setView(camera);
+    }
+
     @Override
-    public void render(){
+    public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.translate((float) Game.delta_x, (float) Game.delta_y);
-        camera.update();
-        tiledMapRenderer.setView(camera);
+        //camera.translate((float) Game.delta_x, (float) Game.delta_y);
+        //camera.update();
+        //new_render();
         tiledMapRenderer.render();
     }
 }
