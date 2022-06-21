@@ -149,7 +149,7 @@ public class Game extends ApplicationAdapter {
 		inventory_selected = new Texture("inventory_selected.png");
 
 
-		dot = new Texture("dot.png");
+//		dot = new Texture("dot.png");
 
 		/*
 		item_id / item_name / description
@@ -586,7 +586,7 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
-		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
+//		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
 		batch_character.end();
 		batch_vignette.end();
 		health_bar.end();

@@ -2,6 +2,8 @@ package com.ideograph.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class movement {
@@ -30,19 +32,49 @@ public class movement {
         }
     }
 
-    public static boolean xCollided(){
-        // true -> collision happens
+    public static void Collision_handling() {
+//        if (Game.tiledLayer0.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)-1) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72), (int) (Game.character_y / 72)+1) != null) {
+//            return true;
+//        }
+//        return false;
+//        Rectangle left_bound = new Rectangle(Game.character_x, Game.character_y, 1, 64);
+//        Rectangle right_bound = new Rectangle(Game.character_x+64, Game.character_y, 1, 64);
+        float character_x_displaced, character_y_displaced;
+        float x_dist, y_dist, x_time = 49, y_time = 49;
+        if (velocity.x > 0 && velocity.y > 0) {
+            for (int i = ((int) Game.character_x / 72); i < ((int) Game.character_x / 72) + 3; i++) {
+                for (int j = ((int) Game.character_y / 72) * 72; j < ((int) Game.character_y / 72) * 72 + 3; j++)
+                    if (Game.tiledLayer0.getCell(i, j) != null) {
+                        //collision with velocity at first quadrant -> determine which side collided (-> zero out the one with higher value)
+                        x_dist = i * 72 - Game.character_x - 64; //distance to wall on x axis
+                        y_dist = j * 72 - Game.character_y - 64; //distance to wall on y axis
+                        //calculate 'minimum time' required to reach wall -> collision priority
+                        if (x_time == 49) {
+                            x_time = x_dist / velocity.x;
+                        } else if (x_dist / velocity.x < x_time && x_dist / velocity.x >= 0) {
+                            x_time = x_dist / velocity.x;
+                        }
+                        if (y_time == 49) {
+                            y_time = y_dist / velocity.y;
+                        } else if (y_dist / velocity.y < y_time && y_dist / velocity.y >= 0) {
+                            y_time = y_dist / velocity.y;
+                        }
+                    }
+                //move character for (x_time+y_time)/2 frames, if collision then do collision on first side, if no second
+                float avg_displace_time = (x_time + y_time) / 2;
+                character_x_displaced = Game.character_x + velocity.x * avg_displace_time;
+                character_y_displaced = Game.character_y + velocity.y * avg_displace_time;
 
-        if (Game.tiledLayer0.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)-1) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72), (int) (Game.character_y / 72)+1) != null) {
-            return true;
+
+            }
         }
-        return false;
+        //other velocity situation...
     }
 
-    public static boolean yCollided(){
+    public static boolean yCollided() {
         // true -> collision happens
 
-        if (Game.tiledLayer0.getCell((int) Game.character_x / 72-1, (int) (Game.character_y / 72)) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72)+1, (int) (Game.character_y / 72)) != null) {
+        if (Game.tiledLayer0.getCell((int) Game.character_x / 72 - 1, (int) (Game.character_y / 72)) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72) + 1, (int) (Game.character_y / 72)) != null) {
             return true;
         }
         return false;
@@ -50,7 +82,7 @@ public class movement {
 
     public static void doMovement() {
         isGrounded();
-        if(!grounded) {
+        if (!grounded) {
             velocity.y -= gravity;
         }
 
@@ -87,6 +119,9 @@ public class movement {
         velocity.y -= gravity;
         velocity.x *= 0.9;
 
+        Collision_handling();
+
+
         //fall safe for debuging
         if (Game.character_y <= 0) {
             Game.character_y = 0;
@@ -105,26 +140,25 @@ public class movement {
 
 
 
-        */
+         */
 
 
-
-        if (xCollided()) {
-            if(velocity.x > 0){
-                Game.character_x = ((int) Game.character_x/72) * 72 + 8;
-            }
-            velocity.x = -1 * CoR * velocity.x;
-            if (velocity.x < epsilon) {
-                velocity.x = 0;
-            }
-
-        }
-        if (yCollided()) {
-            velocity.y = -1 * CoR * velocity.y;
-            if (velocity.y < epsilon) {
-                velocity.y = 0;
-            }
-        }
+//        if (xCollided()) {
+//            if (velocity.x > 0) {
+//                Game.character_x = ((int) Game.character_x / 72) * 72 + 8;
+//            }
+//            velocity.x = -1 * CoR * velocity.x;
+//            if (velocity.x < epsilon) {
+//                velocity.x = 0;
+//            }
+//
+//        }
+//        if (yCollided()) {
+//            velocity.y = -1 * CoR * velocity.y;
+//            if (velocity.y < epsilon) {
+//                velocity.y = 0;
+//            }
+//        }
 
     }
 
