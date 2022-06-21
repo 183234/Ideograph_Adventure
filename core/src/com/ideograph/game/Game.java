@@ -46,7 +46,7 @@ public class Game extends ApplicationAdapter {
 	public boolean health_initialized = false;
 	public boolean isDead = false;
 	public boolean stamina_initialized = false;
-	public int inventory_item[] = new int[25];
+	static TiledMap map0;
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
 	public int selected_item = 0;
@@ -54,8 +54,8 @@ public class Game extends ApplicationAdapter {
 	Texture img_vignette;
 	SpriteBatch health_bar;
 	SpriteBatch stamina_bar;
-	TiledMap map0;
-	TiledMapTileLayer tiledLayer0;
+	static TiledMapTileLayer tiledLayer0;
+	public int[] inventory_item = new int[25];
 	Texture health_bar_bg;
 
 	//level_tutorial level = new level_tutorial();
@@ -205,15 +205,15 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClearColor(39 / 255f, 40 / 255f, 34 / 255f, 0.9f);
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		camera.translate(character_x-xwx, character_y-ywy);
-		camera.position.set(character_x + 490 - character_delta_x, character_y - character_delta_y, 1);
-//		camera.translate(character_delta_x, character_delta_y);
+
+		camera.position.set(character_x + 490, character_y, 0);
+		camera.update();
+
 
 		if (isDead) {
 			camera.position.set((int) character_x + 490, character_y, 1);
 		}
 
-		camera.update();
 		tiledMapRenderer.render();
 		tiledMapRenderer.setView(camera);
 	}
@@ -222,8 +222,8 @@ public class Game extends ApplicationAdapter {
 		float xs = 0, ys = 0;
 		float delta_xs = (1000000.0f / 60 / (character_delta_x + 0.00000004949494949f));
 		float delta_ys = (1000000.0f / 60 / (character_delta_y + 0.00000004949494949f));
-		int x_positive = 1;
-		int y_positive = 1;
+		int x_positive;
+		int y_positive;
 		if (delta_xs < 0) {
 			delta_xs *= -1;
 		}
@@ -255,26 +255,26 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
-	public void math_collision() {
-		int collision_x = (int) (character_x) / 72;
-		int collision_y = (int) (character_y) / 72;
-		boolean checked = false;
-		Rectangle collision_rect;
-		for (int i = -2; i < 3; i++) {
-			for (int j = -2; j < 3; j++) {
-				if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
-					count += 1;
-					circle.x = character_x + character_delta_x;
-					circle.y = character_y + character_delta_y;
-					circle.radius = 32;
-					collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
-					if (Intersector.overlaps(circle, collision_rect)) {
-//						int up_left =
-					}
-				}
-			}
-		}
-	}
+//	public void math_collision() {
+//		int collision_x = (int) (character_x) / 72;
+//		int collision_y = (int) (character_y) / 72;
+//		boolean checked = false;
+//		Rectangle collision_rect;
+//		for (int i = -2; i < 3; i++) {
+//			for (int j = -2; j < 3; j++) {
+//				if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
+//					count += 1;
+//					circle.x = character_x + character_delta_x;
+//					circle.y = character_y + character_delta_y;
+//					circle.radius = 32;
+//					collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
+//					if (Intersector.overlaps(circle, collision_rect)) {
+////						int up_left =
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	public void new_collision() {
 		int collision_x = (int) (character_x) / 72;
@@ -440,15 +440,15 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
-	public void movement() {
-		//character_x = 490;
-		//character_y = 490;
-		character_x += character_delta_x;
-		character_y += character_delta_y;
-		character_delta_x *= 0.97;
-		character_delta_y *= 0.97;
-		character_delta_y -= 0.69;
-	}
+//	public void movement() {
+//		//character_x = 490;
+//		//character_y = 490;
+//		character_x += character_delta_x;
+//		character_y += character_delta_y;
+//		character_delta_x *= 0.97;
+//		character_delta_y *= 0.97;
+//		character_delta_y -= 0.69;
+//	}
 
 	public void others_move() {
 	}
@@ -501,10 +501,10 @@ public class Game extends ApplicationAdapter {
 
 		// collision
 		new_collision();
-		new_movement();
-		movement();
-//		others_move();
+//		new_movement();
+		movement.doMovement();
 		renderBackground();
+//		others_move();
 
 		//camera stuff
 //		map_delta_x = character_delta_x;
