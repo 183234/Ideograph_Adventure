@@ -75,6 +75,7 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_icon;
 	Texture inventory_UI;
 	Texture inventory_selected;
+	Texture dot;
 	float map_delta_x = 0;
 	float map_delta_y = 0;
 	float health = 4900;
@@ -146,6 +147,9 @@ public class Game extends ApplicationAdapter {
 		inventory_icon = new Texture("inventory_icon.png");
 		inventory_UI = new Texture("inventory.png");
 		inventory_selected = new Texture("inventory_selected.png");
+
+
+		dot = new Texture("dot.png");
 
 		/*
 		item_id / item_name / description
@@ -581,6 +585,8 @@ public class Game extends ApplicationAdapter {
 				inventory.draw(inventory_selected, character_x + 343 + (selected_item % 5) * 102 - 1, character_y - 250 + 362 - (selected_item / 5) * 102 - 1);
 			}
 		}
+
+		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
 		batch_character.end();
 		batch_vignette.end();
 		health_bar.end();

@@ -14,13 +14,15 @@ public class movement {
     static int high_jump_period = 6;
     static Vector2 velocity = new Vector2(0, 0);
 
+
     //migrate collision function here
 
 
     //determine if grounded
     public static void isGrounded() {
         if (Game.tiledLayer0.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72) + 1, (int) (Game.character_y / 72)) != null) {
-            if (velocity.y <= 10) {
+            Game.character_y = Game.character_y / 72 * 72;
+            if (velocity.y <= 5) {
                 grounded = true;
             }
         } else {
@@ -28,8 +30,30 @@ public class movement {
         }
     }
 
+    public static boolean xCollided(){
+        // true -> collision happens
+
+        if (Game.tiledLayer0.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)-1) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72), (int) (Game.character_y / 72)+1) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean yCollided(){
+        // true -> collision happens
+
+        if (Game.tiledLayer0.getCell((int) Game.character_x / 72-1, (int) (Game.character_y / 72)) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72)+1, (int) (Game.character_y / 72)) != null) {
+            return true;
+        }
+        return false;
+    }
+
     public static void doMovement() {
         isGrounded();
+        if(!grounded) {
+            velocity.y -= gravity;
+        }
+
         //fall safe for debugging
         if (Game.character_y <= 0) {
             grounded = true;
@@ -76,18 +100,31 @@ public class movement {
         Game.character_y += velocity.y;
 
 
-//        if (x_collided) {
-//            velocity.x = -1 * CoR * velocity.x;
-//            if (velocity.x < epsilon) {
-//                velocity.x = 0;
-//            }
-//        }
-//        if (y_collided) {
-//            velocity.y = -1 * CoR * velocity.y;
-//            if (velocity.y < epsilon) {
-//                velocity.y = 0;
-//            }
-//        }
+        // try to code new collision
+        /*
+
+
+
+        */
+
+
+
+        if (xCollided()) {
+            if(velocity.x > 0){
+                Game.character_x = ((int) Game.character_x/72) * 72 + 8;
+            }
+            velocity.x = -1 * CoR * velocity.x;
+            if (velocity.x < epsilon) {
+                velocity.x = 0;
+            }
+
+        }
+        if (yCollided()) {
+            velocity.y = -1 * CoR * velocity.y;
+            if (velocity.y < epsilon) {
+                velocity.y = 0;
+            }
+        }
 
     }
 
