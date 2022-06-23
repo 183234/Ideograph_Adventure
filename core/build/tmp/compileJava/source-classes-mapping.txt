@@ -9,6 +9,8 @@ com/ideograph/game/Item.java
 com/ideograph/game/owo.java
  com.ideograph.game.ExtraBehavior
  com.ideograph.game.owo
+com/ideograph/game/maploader.java
+ com.ideograph.game.maploader
 com/ideograph/game/movement.java
  com.ideograph.game.movement
 com/ideograph/game/Game.java
