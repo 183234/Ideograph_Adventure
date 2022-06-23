@@ -1,0 +1,13 @@
+# gradle stuff
+# template from https://github.com/github/gitignore/blob/main/Gradle.gitignore
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle-wrapper.properties
+.gradletasknamecache
+
+# IDE stuff
+.idea/
+.code-workspace
