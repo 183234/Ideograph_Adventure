@@ -23,8 +23,10 @@ class Food extends Item {
     int[] Strength = {0, 0, 0}; //Strength, duration(frames), possibility(%)
     int[] Swiftness = {0, 0, 0}; //Strength, duration(frames), possibility(%)
 
-    public Food() {
-        super();
+    public Food(String name, String desc) {
+        this.item_name = name;
+        this.item_description = desc;
+        this.item_texture = new Texture(name+".png");
     }
 
     public String ExtraBehavior() {

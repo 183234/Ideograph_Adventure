@@ -84,19 +84,19 @@ public class Game extends ApplicationAdapter {
 	int wall_jump = 0;
 	int click_x = 0;
 	int click_y = 0;
-	Food sushi = new Food();
-	Food cake = new Food();
-	Food cookie = new Food();
-	Food fries = new Food();
-	Food juice = new Food();
-	Food meat = new Food();
-	Food pineapple = new Food();
-	Food pizza = new Food();
-	Food ramen = new Food();
-	// collision stuff
-	Food sunnyside_up_egg = new Food();
-	Food spaghetti = new Food();
-	Food taco = new Food();
+	// foods :yum:
+	Food sushi;
+	Food cake;
+	Food cookie;
+	Food fries;
+	Food juice;
+	Food meat;
+	Food pineapple;
+	Food pizza;
+	Food ramen;
+	Food sunnyside_up_egg;
+	Food spaghetti;
+	Food taco;
 	//tiled map stuff
 	OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
@@ -167,42 +167,18 @@ public class Game extends ApplicationAdapter {
 		12 / taco             / taco
 		 */
 
-		sushi.item_description = "好吃的壽司";
-		sushi.item_name = "sushi";
-		sushi.item_texture = new Texture("sushi.png");
-		cake.item_description = "看起來很好吃的蛋糕 ||實際上已經放了兩個月||";
-		cake.item_name = "cake";
-		cake.item_texture = new Texture("cake.png");
-		cookie.item_description = "一片手工餅乾";
-		cookie.item_name = "cookie";
-		cookie.item_texture = new Texture("cookie.png");
-		fries.item_description = "麥X勞的薯條";
-		fries.item_name = "fries";
-		fries.item_texture = new Texture("fries.png");
-		juice.item_description = "一杯果汁 ||內含酒精||";
-		juice.item_name = "juice";
-		juice.item_texture = new Texture("juice.png");
-		meat.item_description = "一塊肉";
-		meat.item_name = "meat";
-		meat.item_texture = new Texture("meat.png");
-		pineapple.item_description = "從鳳梨披薩拔下來的鳳梨";
-		pineapple.item_name = "pineapple";
-		pineapple.item_texture = new Texture("pineapple.png");
-		pizza.item_description = "拔掉鳳梨的披薩";
-		pizza.item_name = "pizza";
-		pizza.item_texture = new Texture("pizza.png");
-		ramen.item_description = "抽槳用拉麵";
-		ramen.item_name = "ramen";
-		ramen.item_texture = new Texture("ramen.png");
-		sunnyside_up_egg.item_description = "一顆蛋 似乎跟端午節立的但是同一顆";
-		sunnyside_up_egg.item_name = "sunnyside_up_egg";
-		sunnyside_up_egg.item_texture = new Texture("sunnyside_egg.png");
-		spaghetti.item_description = "原本在冷凍包裝中的義大利麵";
-		spaghetti.item_name = "spaghetti";
-		spaghetti.item_texture = new Texture("spaghetti.png");
-		taco.item_description = "taco";
-		taco.item_name = "taco";
-		taco.item_texture = new Texture("taco.png");
+		this.sushi = new Food("sushi", "好吃的壽司");
+		this.cake = new Food("cake", "看起來很好吃的蛋糕 ||實際上已經放了兩個月||");
+		this.cookie = new Food("cookie", "一片手工餅乾");
+		this.fries = new Food("fries","麥X勞的薯條");
+		this.juice = new Food("juice","一杯果汁 ||內含酒精||");
+		this.meat = new Food("meat","一塊肉");
+		this.pineapple = new Food("pineapple","從鳳梨披薩拔下來的鳳梨");
+		this.pizza = new Food("pizza","拔掉鳳梨的披薩");
+		this.ramen = new Food("ramen","抽槳用拉麵");
+		this.sunnyside_up_egg = new Food("sunnyside_egg","一顆蛋 似乎跟端午節立的但是同一顆");
+		this.spaghetti = new Food("spaghetti","原本在冷凍包裝中的義大利麵");
+		this.taco = new Food("taco","taco");
 	}
 
 	public void renderBackground() {
@@ -528,14 +504,10 @@ public class Game extends ApplicationAdapter {
 		if (!inInventory) {
 			inventory.draw(inventory_icon, character_x + 630, character_y - 420);
 			if (Gdx.input.isTouched()) {
-				System.out.println("x = " + Gdx.input.getX());
-				System.out.println("y = " + Gdx.input.getY());
 				// 1154 952 center
-				if (click_x > 1154 - 36 && Gdx.input.getX() < 1154 + 36) {
-					if (Gdx.input.getY() > 952 - 36 && Gdx.input.getY() < 952 + 36) {
-						inInventory = true;
-//						System.out.println("owo");
-					}
+				if (click_x > 1154 - 36 && click_x < 1154 + 36 &&
+						click_y > 952 - 36 && click_y < 952 + 36) {
+					inInventory = true;
 				}
 			}
 		} else {
@@ -543,13 +515,13 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(inventory_UI, character_x + 300, character_y - 250);
 			//close
 			if (Gdx.input.isTouched()) {
-				System.out.println("x = " + Gdx.input.getX());
-				System.out.println("y = " + Gdx.input.getY());
+//				System.out.println("x = " + Gdx.input.getX());
+//				System.out.println("y = " + Gdx.input.getY());
 				// 1704 334 center
 				if (Gdx.input.getX() > 1704 - 10 && Gdx.input.getX() < 1704 + 10) {
 					if (Gdx.input.getY() > 334 - 10 && Gdx.input.getY() < 334 + 10) {
 						inInventory = false;
-						System.out.println("owo");
+//						System.out.println("owo");
 					}
 				}
 			}
@@ -580,7 +552,7 @@ public class Game extends ApplicationAdapter {
 //					}
 //				}
 //			}
-			System.out.println(selected_item);
+//			System.out.println(selected_item);
 			if (selected_item != 0) {
 				inventory.draw(inventory_selected, character_x + 343 + (selected_item % 5) * 102 - 1, character_y - 250 + 362 - (selected_item / 5) * 102 - 1);
 			}
