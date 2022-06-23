@@ -1,4 +1,0 @@
-com/ideograph/game/desktop/IdeographAdventure.java
- com.ideograph.game.desktop.IdeographAdventure
-com/ideograph/game/desktop/DesktopLauncher.java
- com.ideograph.game.desktop.DesktopLauncher
