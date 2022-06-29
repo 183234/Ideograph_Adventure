@@ -125,14 +125,7 @@ public class Game extends ApplicationAdapter {
 		stamina_bar_color = new Texture("BarV4_ProgressBar.png");
 		stamina_bar_outline = new Texture("BarV4_ProgressBarBorder.png");
 
-		//Load Map
-		map0 = new TmxMapLoader().load("0.tmx");
-		tiledLayer0 = (TiledMapTileLayer) map0.getLayers().get(0);
 
-		// camera stuff
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 1920, 1080);
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(map0);
 
 		//Regions
 		health_region = new TextureRegion(health_bar_color, 1.0f, character_y - 470, (float) 271, 21.0f);
@@ -148,8 +141,18 @@ public class Game extends ApplicationAdapter {
 		inventory_UI = new Texture("inventory.png");
 		inventory_selected = new Texture("inventory_selected.png");
 
+		//maploader(?
+		maploader.loadmap(level);
 
-//		dot = new Texture("dot.png");
+		//Load Map
+		map = new TmxMapLoader().load("level/0.tmx");
+		tiledLayer = (TiledMapTileLayer) maploader.map_current.getLayers().get(0);
+
+		// camera stuff
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 1920, 1080);
+		tiledMapRenderer = new OrthogonalTiledMapRenderer(maploader.map_current);
+
 
 		/*
 		item_id / item_name / description
@@ -484,11 +487,8 @@ public class Game extends ApplicationAdapter {
 //		new_movement();
 		movement.doMovement();
 		renderBackground();
-//		others_move();
 
-		//camera stuff
-//		map_delta_x = character_delta_x;
-//		map_delta_y = character_delta_y;
+		//tiledmap_type_debug();
 
 		//rendering elements
 		batch_character.draw(img_character, (int) character_x, (int) character_y);

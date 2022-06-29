@@ -1,0 +1,212 @@
+/*
+
+ancient stuff
+may be useful but probably not
+
+*/
+
+
+
+public void new_movement() {
+    float xs = 0, ys = 0;
+    float delta_xs = (1000000.0f / 60 / (character_delta_x + 0.00000004949494949f));
+    float delta_ys = (1000000.0f / 60 / (character_delta_y + 0.00000004949494949f));
+    int x_positive;
+    int y_positive;
+    if (delta_xs < 0) {
+        delta_xs *= -1;
+    }
+    if (delta_ys < 0) {
+        delta_ys *= -1;
+    }
+    while (xs < 16666 && ys < 16666) {
+        if (character_delta_x < 0) {
+            x_positive = -1;
+        } else {
+            x_positive = 1;
+        }
+        if (character_delta_y < 0) {
+            y_positive = -1;
+        } else {
+            y_positive = 1;
+        }
+
+        if (xs + delta_xs < ys + delta_ys) {
+            character_x += x_positive;
+            xs += delta_xs;
+        } else {
+            character_y += y_positive;
+            ys += delta_ys;
+        }
+
+
+        new_collision();
+    }
+}
+
+//	public void math_collision() {
+//		int collision_x = (int) (character_x) / 72;
+//		int collision_y = (int) (character_y) / 72;
+//		boolean checked = false;
+//		Rectangle collision_rect;
+//		for (int i = -2; i < 3; i++) {
+//			for (int j = -2; j < 3; j++) {
+//				if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
+//					count += 1;
+//					circle.x = character_x + character_delta_x;
+//					circle.y = character_y + character_delta_y;
+//					circle.radius = 32;
+//					collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
+//					if (Intersector.overlaps(circle, collision_rect)) {
+////						int up_left =
+//					}
+//				}
+//			}
+//		}
+//	}
+
+public void new_collision() {
+    int collision_x = (int) (character_x) / 72;
+    int collision_y = (int) (character_y) / 72;
+    int x_collision = 0;
+    int y_collision = 0;
+    boolean checked = false;
+    Rectangle collision_rect;
+    for (int i = -2; i < 3; i++) {
+        for (int j = -2; j < 3; j++) {
+            if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
+                count += 1;
+                circle.x = character_x + character_delta_x;
+                circle.y = character_y + character_delta_y;
+                circle.radius = 32;
+                collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
+                if (Intersector.overlaps(circle, collision_rect)) {
+                    // collision on x direction
+                    circle.x = character_x + 32;
+                    circle.y = character_y;
+                    circle.radius = 1;
+                    if (!checked) {
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            checked = true;
+                            if (wall_jump != 1) {
+                                jump = true;
+                            }
+                            wall_jump = 1;
+                        }
+                        circle.x = character_x - 32;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            checked = true;
+                            if (wall_jump != 2) {
+                                jump = true;
+                            }
+                            wall_jump = 2;
+                        }
+
+                        //collision on y direction
+                        circle.x = character_x;
+                        circle.y = character_y + 32;
+                        circle.radius = 1;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            y_collision = 1;
+                            checked = true;
+                        }
+                        circle.y = character_y - 32;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            y_collision = 1;
+                            checked = true;
+                            jump = true;
+                            wall_jump = 0;
+                        }
+                    }
+                    if (!checked) {
+                        circle.x = character_x + 23;
+                        circle.y = character_y + 23;
+                        circle.radius = 1;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            y_collision = 1;
+                        }
+                    }
+                    if (!checked) {
+                        circle.x = character_x - 23;
+                        circle.y = character_y + 23;
+                        circle.radius = 1;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            y_collision = 1;
+                        }
+                    }
+                    if (!checked) {
+                        circle.x = character_x + 23;
+                        circle.y = character_y - 23;
+                        circle.radius = 1;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            y_collision = 1;
+                            jump = true;
+                        }
+                    }
+                    if (!checked) {
+                        circle.x = character_x - 23;
+                        circle.y = character_y - 23;
+                        circle.radius = 1;
+                        if (Intersector.overlaps(circle, collision_rect)) {
+                            x_collision = 1;
+                            y_collision = 1;
+                            jump = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    if (x_collision == 1) {
+        character_delta_x = -1 * character_delta_x;
+        //character_delta_x = 0;
+    }
+    if (y_collision == 1) {
+        int owo = 0;
+        if (checked) {
+            owo = 1;
+        }
+        character_delta_y = -0.5f - (owo / 2.0f) * character_delta_y;
+        //character_delta_y = 0;
+    }
+}
+
+public static void Collision_handling() {
+    float character_x_displaced, character_y_displaced;
+    float x_dist, y_dist, x_time = 49, y_time = 49;
+    if (velocity.x > 0 && velocity.y > 0) {
+                    for (int i = ((int) Game.character_x / 72); i < ((int) Game.character_x / 72) + 3; i++) {
+                        for (int j = ((int) Game.character_y / 72) * 72; j < ((int) Game.character_y / 72) * 72 + 3; j++)
+                            if (Game.tiledLayer0.getCell(i, j) != null) {
+                                //collision with velocity at first quadrant -> determine which side collided (-> zero out the one with higher value)
+                                x_dist = i * 72 - Game.character_x - 64; //distance to wall on x axis
+                                y_dist = j * 72 - Game.character_y - 64; //distance to wall on y axis
+                    //calculate 'minimum time' required to reach wall -> collision priority
+                    if (x_time == 49) {
+                        x_time = x_dist / velocity.x;
+                    } else if (x_dist / velocity.x < x_time && x_dist / velocity.x >= 0) {
+                        x_time = x_dist / velocity.x;
+                    }
+                    if (y_time == 49) {
+                        y_time = y_dist / velocity.y;
+                    } else if (y_dist / velocity.y < y_time && y_dist / velocity.y >= 0) {
+                        y_time = y_dist / velocity.y;
+                    }
+                }
+            //move character for (x_time+y_time)/2 frames, if collision then do collision on first side, if no second
+            float avg_displace_time = (x_time + y_time) / 2;
+            character_x_displaced = Game.character_x + velocity.x * avg_displace_time;
+            character_y_displaced = Game.character_y + velocity.y * avg_displace_time;
+
+
+        }
+    }
+    //other velocity situation...
+}

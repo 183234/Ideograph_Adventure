@@ -11,3 +11,6 @@ gradle-app.setting
 # IDE stuff
 .idea/
 .code-workspace
+
+# other stuff
+note.md
