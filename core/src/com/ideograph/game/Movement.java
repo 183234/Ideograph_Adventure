@@ -2,11 +2,10 @@ package com.ideograph.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
 
-public class movement {
+public class Movement {
     static boolean grounded;
     static float speed_factor = 0.5f;
     static float gravity = 0.5f;
@@ -14,22 +13,24 @@ public class movement {
     float epsilon = 0.5f;
     static int soft_jump_grace_period = 2;
     static int high_jump_period = 6;
-    static Vector2 velocity = new Vector2(0, 0);
-
-
-    //migrate collision function here
-
 
     //determine if grounded
     public static void isGrounded() {
-        if (Game.tiledLayer0.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)) != null || Game.tiledLayer0.getCell((int) (Game.character_x / 72) + 1, (int) (Game.character_y / 72)) != null) {
-            Game.character_y = Game.character_y / 72 * 72;
-            if (velocity.y <= 5) {
-                grounded = true;
-            }
+        if (Game.tiledLayer.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)) != null || Game.tiledLayer.getCell((int) (Game.character_x / 72) + 1, (int) (Game.character_y / 72)) != null) {
+            grounded = (Math.abs(Game.character_delta_y) <= 5);
         } else {
             grounded = false;
         }
+    }
+
+    public static boolean isBlock(int x, int y) {
+        return Game.tiledLayer.getCell(x, y) != null;
+    }
+    public static boolean inside(float l, float x, float r) {
+        return l < x && x < r;
+    }
+    public static String str(int x,int y) {
+        return "(" + x + ", " + y + ")";
     }
 
     // handles collision
@@ -130,7 +131,7 @@ public class movement {
     public static void doMovement() {
         isGrounded();
         if (!grounded) {
-            velocity.y -= gravity;
+            Game.character_delta_y -= gravity;
         }
 
         //fall safe for debugging
@@ -142,18 +143,18 @@ public class movement {
             speed_factor = 1;
             Game.stamina_cur--;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) velocity.x -= 1 * speed_factor;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) velocity.x += 1 * speed_factor;
-//        if (Gdx.input.isKeyPressed(Input.Keys.S)) velocity.y -= 1 * sprint;
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) Game.character_delta_x -= 1 * speed_factor;
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) Game.character_delta_x += 1 * speed_factor;
+//        if (Gdx.input.isKeyPressed(Input.Keys.S)) Game.character_delta_y -= 1 * sprint;
         if (Gdx.input.isKeyPressed(Input.Keys.W) && grounded) {
-            velocity.y = 18;
+            Game.character_delta_y = 18;
         }
         if (!grounded) {
             if (soft_jump_grace_period >= 0) {
                 soft_jump_grace_period--;
             } else {
                 if (Gdx.input.isKeyPressed(Input.Keys.W) && high_jump_period >= 0) {
-                    velocity.y += 2;
+                    Game.character_delta_y += 2;
                     high_jump_period--;
                 }
             }
@@ -163,51 +164,24 @@ public class movement {
         }
 
         //apply friction and gravity
-        velocity.y -= gravity;
-        velocity.x *= 0.9;
+        Game.character_delta_x *= 0.9;
 
         ArrayList<int[]> collisions = pixelCollision();
 //        InteractiveBlock.Interact(collisions);
         //Collision_handling();
 
 
-        //fall safe for debuging
+        //fall safe for debugging
         if (Game.character_y <= 0) {
             Game.character_y = 0;
             if (!Gdx.input.isKeyPressed(Input.Keys.W)) {
-                velocity.y = 0;
+                Game.character_delta_y = 0;
             }
         }
 
         //move character
-        Game.character_x += velocity.x;
-        Game.character_y += velocity.y;
-
-
-        // try to code new collision
-        /*
-
-
-
-         */
-
-
-//        if (xCollided()) {
-//            if (velocity.x > 0) {
-//                Game.character_x = ((int) Game.character_x / 72) * 72 + 8;
-//            }
-//            velocity.x = -1 * CoR * velocity.x;
-//            if (velocity.x < epsilon) {
-//                velocity.x = 0;
-//            }
-//
-//        }
-//        if (yCollided()) {
-//            velocity.y = -1 * CoR * velocity.y;
-//            if (velocity.y < epsilon) {
-//                velocity.y = 0;
-//            }
-//        }
+        Game.character_x += Game.character_delta_x;
+        Game.character_y += Game.character_delta_y;
 
     }
 

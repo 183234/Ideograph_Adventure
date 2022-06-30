@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -15,15 +14,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
-import com.sun.java.accessibility.util.internal.CheckboxTranslator;
-
-
-import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.Map;
 //import com.badlogic.gdx.math.Rectangle;
 //import com.badlogic.gdx.utils.Null;
 //import com.badlogic.gdx.utils.ScreenUtils;
@@ -34,6 +24,8 @@ import java.util.Map;
 
 
 public class Game extends ApplicationAdapter {
+	static final int BLOCK_WIDTH = 72;
+	static final int CHAR_WIDTH = 64;
 
 	SpriteBatch batch_character; // ideograph_advantage
 	Texture img_character;   // img of ideograph_advantage
@@ -46,7 +38,7 @@ public class Game extends ApplicationAdapter {
 	public boolean health_initialized = false;
 	public boolean isDead = false;
 	public boolean stamina_initialized = false;
-	static TiledMap map0;
+	static TiledMap map;
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
 	public int selected_item = 0;
@@ -54,7 +46,7 @@ public class Game extends ApplicationAdapter {
 	Texture img_vignette;
 	SpriteBatch health_bar;
 	SpriteBatch stamina_bar;
-	static TiledMapTileLayer tiledLayer0;
+	static TiledMapTileLayer tiledLayer;
 	public int[] inventory_item = new int[25];
 	Texture health_bar_bg;
 
@@ -75,7 +67,6 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_icon;
 	Texture inventory_UI;
 	Texture inventory_selected;
-	Texture dot;
 	float map_delta_x = 0;
 	float map_delta_y = 0;
 	float health = 4900;
@@ -100,9 +91,10 @@ public class Game extends ApplicationAdapter {
 	//tiled map stuff
 	OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
-	Circle circle = new Circle();
-	int count = 0;
+	static int level = 0;
 	boolean inventory_initialized = false;
+	static boolean next_level = false;
+	static MapLoader maploader = new MapLoader();
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
 
@@ -197,179 +189,8 @@ public class Game extends ApplicationAdapter {
 			camera.position.set((int) character_x + 490, character_y, 1);
 		}
 
-		tiledMapRenderer.render();
 		tiledMapRenderer.setView(camera);
-	}
-
-	public void new_movement() {
-		float xs = 0, ys = 0;
-		float delta_xs = (1000000.0f / 60 / (character_delta_x + 0.00000004949494949f));
-		float delta_ys = (1000000.0f / 60 / (character_delta_y + 0.00000004949494949f));
-		int x_positive;
-		int y_positive;
-		if (delta_xs < 0) {
-			delta_xs *= -1;
-		}
-		if (delta_ys < 0) {
-			delta_ys *= -1;
-		}
-		while (xs < 16666 && ys < 16666) {
-			if (character_delta_x < 0) {
-				x_positive = -1;
-			} else {
-				x_positive = 1;
-			}
-			if (character_delta_y < 0) {
-				y_positive = -1;
-			} else {
-				y_positive = 1;
-			}
-
-			if (xs + delta_xs < ys + delta_ys) {
-				character_x += x_positive;
-				xs += delta_xs;
-			} else {
-				character_y += y_positive;
-				ys += delta_ys;
-			}
-
-
-			new_collision();
-		}
-	}
-
-//	public void math_collision() {
-//		int collision_x = (int) (character_x) / 72;
-//		int collision_y = (int) (character_y) / 72;
-//		boolean checked = false;
-//		Rectangle collision_rect;
-//		for (int i = -2; i < 3; i++) {
-//			for (int j = -2; j < 3; j++) {
-//				if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
-//					count += 1;
-//					circle.x = character_x + character_delta_x;
-//					circle.y = character_y + character_delta_y;
-//					circle.radius = 32;
-//					collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
-//					if (Intersector.overlaps(circle, collision_rect)) {
-////						int up_left =
-//					}
-//				}
-//			}
-//		}
-//	}
-
-	public void new_collision() {
-		int collision_x = (int) (character_x) / 72;
-		int collision_y = (int) (character_y) / 72;
-		int x_collision = 0;
-		int y_collision = 0;
-		boolean checked = false;
-		Rectangle collision_rect;
-		for (int i = -2; i < 3; i++) {
-			for (int j = -2; j < 3; j++) {
-				if (tiledLayer0.getCell(collision_x + i, collision_y + j) != null && !checked) {
-					count += 1;
-					circle.x = character_x + character_delta_x;
-					circle.y = character_y + character_delta_y;
-					circle.radius = 32;
-					collision_rect = new Rectangle((collision_x + i) * 72 - 32, (collision_y + j) * 72 - 32, 72, 72);
-					if (Intersector.overlaps(circle, collision_rect)) {
-						// collision on x direction
-						circle.x = character_x + 32;
-						circle.y = character_y;
-						circle.radius = 1;
-						if (!checked) {
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								checked = true;
-								if (wall_jump != 1) {
-									jump = true;
-								}
-								wall_jump = 1;
-							}
-							circle.x = character_x - 32;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								checked = true;
-								if (wall_jump != 2) {
-									jump = true;
-								}
-								wall_jump = 2;
-							}
-
-							//collision on y direction
-							circle.x = character_x;
-							circle.y = character_y + 32;
-							circle.radius = 1;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								y_collision = 1;
-								checked = true;
-							}
-							circle.y = character_y - 32;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								y_collision = 1;
-								checked = true;
-								jump = true;
-								wall_jump = 0;
-							}
-						}
-						if (!checked) {
-							circle.x = character_x + 23;
-							circle.y = character_y + 23;
-							circle.radius = 1;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								y_collision = 1;
-							}
-						}
-						if (!checked) {
-							circle.x = character_x - 23;
-							circle.y = character_y + 23;
-							circle.radius = 1;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								y_collision = 1;
-							}
-						}
-						if (!checked) {
-							circle.x = character_x + 23;
-							circle.y = character_y - 23;
-							circle.radius = 1;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								y_collision = 1;
-								jump = true;
-							}
-						}
-						if (!checked) {
-							circle.x = character_x - 23;
-							circle.y = character_y - 23;
-							circle.radius = 1;
-							if (Intersector.overlaps(circle, collision_rect)) {
-								x_collision = 1;
-								y_collision = 1;
-								jump = true;
-							}
-						}
-					}
-				}
-			}
-		}
-
-
-		if (x_collision == 1) {
-			character_delta_x = -1 * character_delta_x;
-			//character_delta_x = 0;
-		}
-		if (y_collision == 1) {
-			int owo = 0;
-			if (checked) {
-				owo = 1;
-			}
-			character_delta_y = -0.5f - (owo / 2.0f) * character_delta_y;
-			//character_delta_y = 0;
-		}
+		tiledMapRenderer.render();
 	}
 
 	public void hp_handling() {
@@ -432,8 +253,12 @@ public class Game extends ApplicationAdapter {
 //		character_delta_y *= 0.97;
 //		character_delta_y -= 0.69;
 //	}
-
-	public void others_move() {
+	public void tiledmap_type_debug() {
+		TiledMapTileLayer.Cell cell;
+		cell = tiledLayer.getCell((int) character_x/Game.BLOCK_WIDTH, (int) (character_y/Game.BLOCK_WIDTH)-1);
+		if(cell != null) {
+			System.out.println("block type: "+cell.getTile().getId());
+		}
 	}
 
 	@Override
@@ -445,6 +270,14 @@ public class Game extends ApplicationAdapter {
 		death_screen.begin();
 		inventory.begin();
 
+		if(next_level){
+			level ++;
+			character_x = 490;
+			character_y = 490;
+			stamina_initialized = false;
+			health_initialized = false;
+			next_level = false;
+		}
 
 		if (Gdx.input.isTouched()) {
 			click_x = Gdx.input.getX();
@@ -468,29 +301,13 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
-		//calculate character velocity
-		float sprint = 0.5f;
-		if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && stamina_cur > 0) {
-			sprint = 1;
-			stamina_cur--;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.A)) character_delta_x -= 1 * sprint;
-		if (Gdx.input.isKeyPressed(Input.Keys.D)) character_delta_x += 1 * sprint;
-		if (Gdx.input.isKeyPressed(Input.Keys.W) && jump) {
-			character_delta_y = 49 * 0.5f;
-			jump = false;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.S)) character_delta_y -= 1 * sprint;
-
 		// collision
-		new_collision();
-//		new_movement();
-		movement.doMovement();
+		Movement.doMovement();
 		renderBackground();
 
 		//tiledmap_type_debug();
 
-		//rendering elements
+		// rendering elements
 		batch_character.draw(img_character, (int) character_x, (int) character_y);
 		batch_vignette.draw(img_vignette, character_x - 490, character_y - 490);
 		health_bar.draw(health_bar_bg, character_x + 335, character_y - 390);
@@ -500,7 +317,7 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.draw(stamina_region, character_x + 335, character_y - 410);
 		stamina_bar.draw(stamina_bar_outline, character_x + 331, character_y - 415);
 
-		//inventory
+		// inventory
 		if (!inInventory) {
 			inventory.draw(inventory_icon, character_x + 630, character_y - 420);
 			if (Gdx.input.isTouched()) {
@@ -585,47 +402,4 @@ public class Game extends ApplicationAdapter {
 files
 .tmx in ideograph advanture
 .tsx in assets
-
-
-
-
 */
-
-
-//	class Item {
-//		private final String m_name;
-//		private final String m_desc;
-//		private final Texture m_texture;
-//
-//		private Item(String name, String desc){
-//			this.m_name = name;
-//			this.m_desc = desc;
-//			this.m_texture = new Texture(this.m_name+".png");;
-//		}
-//	}
-//
-//
-//	class Food extends Item {
-//
-//		private Food(String name, String desc){
-//			super(name, desc);
-//		}
-//
-//		public Texture getTexture(){
-//			return this.m_texture;
-//		}
-//
-//		public void use() {
-//			System.out.println("You ate a " + this.name + " :yum: !");
-//		}
-//	}
-//
-//	class Pizza extends Food {
-//		public Pizza() {
-//			super("pizza", "拔掉鳳梨的披薩");
-//		}
-//
-//		public void use() {
-//			// ...
-//		}
-//	}
