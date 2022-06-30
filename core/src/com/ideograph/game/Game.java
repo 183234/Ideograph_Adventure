@@ -99,8 +99,7 @@ public class Game extends ApplicationAdapter {
 	Weapon uwu = new Weapon();
 
 	@Override
-	public void create() {
-		batch_character = new SpriteBatch();
+	public void create() {batch_character = new SpriteBatch();
 		img_character = new Texture("u6307(64x).png");
 		batch_vignette = new SpriteBatch();
 		img_vignette = new Texture("vignette.png");
@@ -244,15 +243,6 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
-//	public void movement() {
-//		//character_x = 490;
-//		//character_y = 490;
-//		character_x += character_delta_x;
-//		character_y += character_delta_y;
-//		character_delta_x *= 0.97;
-//		character_delta_y *= 0.97;
-//		character_delta_y -= 0.69;
-//	}
 	public void tiledmap_type_debug() {
 		TiledMapTileLayer.Cell cell;
 		cell = tiledLayer.getCell((int) character_x/Game.BLOCK_WIDTH, (int) (character_y/Game.BLOCK_WIDTH)-1);

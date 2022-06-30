@@ -2,13 +2,12 @@ package com.ideograph.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 
 public class Movement {
     static boolean grounded;
     static float speed_factor = 0.5f;
-    static float gravity = 0.5f;
+    static float gravity = 1.0f;
     float CoR = 0.8f; //coefficient of Restitution
     float epsilon = 0.5f;
     static int soft_jump_grace_period = 2;
@@ -62,7 +61,7 @@ public class Movement {
                 int bu = by * BLOCK + BLOCK;
 
                 if(!isBlock(bx, by) ||
-                        Math.min(r,br) <= Math.max(l, bl) ||
+                        Math.min(r, br) <= Math.max(l, bl) ||
                         Math.min(u, bu) <= Math.max(d, bb)) {
                     continue;
                 }
