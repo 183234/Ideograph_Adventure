@@ -4,15 +4,33 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import java.util.ArrayList;
 
+class Status {
+    static int none = 0;
+    static int ground = 1;
+    static int jump = 2;
+    static int wall_right = 4;
+    static int wall_left = 8;
+}
+
 public class Movement {
-    static boolean grounded;
     static float speed_factor = 0.5f;
-    static float gravity = 1.0f;
+    static float gravity = 0.8f;
+    static float wallkick_acc_x = 15.0f;
+    static float wallkick_acc_y = 15;
+    static int kick_cd = 0;
+    static int jump_kick_cooldown = 15;
     float CoR = 0.8f; //coefficient of Restitution
     float epsilon = 0.5f;
     static int soft_jump_grace_period = 2;
     static int high_jump_period = 6;
     static float last_x, last_y;
+
+//    public enum Status {
+//        none, ground, jump, wall_right, wall_left;
+//    };
+    static int status;
+    static int last_kick = Status.none;
+    static int kick_count = 0;
 
     public static boolean isBlock(int x, int y) {
         return Game.tiledLayer.getCell(x, y) != null;
@@ -46,7 +64,7 @@ public class Movement {
 
         int block_x0 = (int)(px/BLOCK);
         int block_y0 = (int)(py/BLOCK);
-        grounded = false;
+        status = Status.none;
         for(int bx = block_x0 - 2; bx <= block_x0 + 2; bx++) {
             for(int by = block_y0 - 2; by <= block_y0 + 2; by++) {
                 float l = px;
@@ -68,16 +86,6 @@ public class Movement {
                 // collided!
                 collisions.add(new int[]{bx, by});
 //                System.out.println("block: " + str(bx, by));
-                if(vx > 0 && intersect(last_x + CHAR, bl, r, br) && !isBlock(bx - 1, by)) {
-                    System.out.println("collided in right face");
-                    vx = 0;
-                    px = Math.min(px, bl - CHAR);
-                }
-                if(vx < 0 && intersect(bl, l, br, last_x) && !isBlock(bx + 1, by)) {
-                    System.out.println("collided in left face");
-                    vx = 0;
-                    px = Math.max(px, br);
-                }
                 if(vy > 0 && intersect(last_y + CHAR, bb, u, bu) && !isBlock(bx, by - 1)) {
 //                    System.out.println("collided in upper face");
                     vy = 0;
@@ -87,11 +95,24 @@ public class Movement {
 //                    System.out.println("collided in lower face");
                     vy = 0;
                     py = Math.max(py, bu);
-                    grounded = true;
+                    status |= Status.ground;
+                }
+                if(vx > 0 && intersect(last_x + CHAR, bl, r, br) && !isBlock(bx - 1, by)) {
+//                    System.out.println("collided in right face");
+                    vx = 0;
+                    px = Math.min(px, bl - CHAR);
+                    status |= Status.wall_right;
+                }
+                if(vx < 0 && intersect(bl, l, br, last_x) && !isBlock(bx + 1, by)) {
+//                    System.out.println("collided in left face");
+                    vx = 0;
+                    px = Math.max(px, br);
+                    status |= Status.wall_left;
                 }
             }
         }
-
+        if((status & Status.ground) == 0) status |= Status.jump;
+//        System.out.println("status: "+Integer.toBinaryString(status));
 
         Game.character_x = px;
         Game.character_y = py;
@@ -106,24 +127,54 @@ public class Movement {
 
         //fall safe for debugging
         if (Game.character_y <= 0) {
-            grounded = true;
+            status = Status.ground;
         }
-        if (grounded) soft_jump_grace_period = 4;
+        if ((status & Status.ground) != 0) soft_jump_grace_period = 4;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Game.stamina_cur > 0) {
-            speed_factor = 1;
+            speed_factor = 2;
             Game.stamina_cur--;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) Game.character_delta_x -= 1 * speed_factor;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) Game.character_delta_x += 1 * speed_factor;
+        }else speed_factor = 1;
+        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) Game.character_delta_x -= 1 * speed_factor;
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) Game.character_delta_x += 1 * speed_factor;
 //        if (Gdx.input.isKeyPressed(Input.Keys.S)) Game.character_delta_y -= 1 * sprint;
-        if (Gdx.input.isKeyPressed(Input.Keys.W) && grounded) {
-            Game.character_delta_y = 18;
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            if((status & Status.ground) != 0) {
+                Game.character_delta_y = 18;
+                kick_cd = jump_kick_cooldown;
+            }
         }
-        if (!grounded) {
+
+        // wall kick
+        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && (status & Status.ground) == 0 && kick_cd <= 0){
+            boolean kicked = false;
+            if ((status & Status.wall_left) != 0 && last_kick != Status.wall_left) {
+                System.out.println("wall kicked: LEfT");
+                kicked = true;
+                last_kick = Status.wall_left;
+                Game.character_delta_x = wallkick_acc_x;
+                Game.character_delta_y = wallkick_acc_y;
+            } else if ((status & Status.wall_right) != 0 && last_kick != Status.wall_right) {
+                System.out.println("wall kicked: RIGHT");
+                kicked = true;
+                last_kick = Status.wall_right;
+                Game.character_delta_x = -wallkick_acc_x;
+                Game.character_delta_y = wallkick_acc_y;
+            }
+            if(kicked) {
+                kick_count++;
+            }
+        }
+        kick_cd--;
+
+        if(status == Status.ground){
+            last_kick = Status.none;
+            kick_count = 0;
+        }
+        if (status != Status.ground) {
             if (soft_jump_grace_period >= 0) {
                 soft_jump_grace_period--;
             } else {
-                if (Gdx.input.isKeyPressed(Input.Keys.W) && high_jump_period >= 0) {
+                if ((Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) && high_jump_period >= 0) {
                     Game.character_delta_y += 2;
                     high_jump_period--;
                 }
