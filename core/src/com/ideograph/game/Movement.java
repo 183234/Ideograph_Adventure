@@ -12,21 +12,16 @@ public class Movement {
     float epsilon = 0.5f;
     static int soft_jump_grace_period = 2;
     static int high_jump_period = 6;
-
-    //determine if grounded
-    public static void isGrounded() {
-        if (Game.tiledLayer.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)) != null || Game.tiledLayer.getCell((int) (Game.character_x / 72) + 1, (int) (Game.character_y / 72)) != null) {
-            grounded = (Math.abs(Game.character_delta_y) <= 5);
-        } else {
-            grounded = false;
-        }
-    }
+    static float last_x, last_y;
 
     public static boolean isBlock(int x, int y) {
         return Game.tiledLayer.getCell(x, y) != null;
     }
     public static boolean inside(float l, float x, float r) {
-        return l < x && x < r;
+        return l <= x && x <= r;
+    }
+    public static boolean intersect(float l1, float l2, float r1, float r2) {
+        return inside(l1, l2, r1) && inside(l2, r1, r2);
     }
     public static String str(int x,int y) {
         return "(" + x + ", " + y + ")";
@@ -43,84 +38,63 @@ public class Movement {
         // current position & velocity
         float vx = Game.character_delta_x;
         float vy = Game.character_delta_y;
+        float px = Game.character_x;
+        float py = Game.character_y;
 
-        float l = Game.character_x;
-        float r = Game.character_x + CHAR;
-        float d = Game.character_y;
-        float u = Game.character_y + CHAR;
 
         ArrayList<int[]> collisions = new ArrayList<int[]>();
 
-        int block_x0 = (int)(l/BLOCK);
-        int block_y0 = (int)(d/BLOCK);
+        int block_x0 = (int)(px/BLOCK);
+        int block_y0 = (int)(py/BLOCK);
+        grounded = false;
         for(int bx = block_x0 - 2; bx <= block_x0 + 2; bx++) {
             for(int by = block_y0 - 2; by <= block_y0 + 2; by++) {
+                float l = px;
+                float r = px + CHAR;
+                float d = py;
+                float u = py + CHAR;
+
                 int bl = bx * BLOCK;
                 int br = bx * BLOCK + BLOCK;
                 int bb = by * BLOCK;
                 int bu = by * BLOCK + BLOCK;
 
                 if(!isBlock(bx, by) ||
-                        Math.min(r, br) <= Math.max(l, bl) ||
-                        Math.min(u, bu) <= Math.max(d, bb)) {
+                        Math.min(r, br) < Math.max(l, bl) ||
+                        Math.min(u, bu) < Math.max(d, bb)) {
                     continue;
                 }
 
                 // collided!
                 collisions.add(new int[]{bx, by});
-                System.out.println("block: " + str(bx, by));
-
-                float rewind = 100;
-                int dir = 0;
-
-                if(vx > 0 && inside(bl, r, br) && !isBlock(bx - 1, by)) {
+//                System.out.println("block: " + str(bx, by));
+                if(vx > 0 && intersect(last_x + CHAR, bl, r, br) && !isBlock(bx - 1, by)) {
                     System.out.println("collided in right face");
-                    float re = (r - bl) / vx;
-                    if(re < rewind){
-                        rewind = re;
-                        dir = 1;
-                    }
-                }
-                if(vx < 0 && inside(bl, l, br) && !isBlock(bx + 1, by)) {
-                    System.out.println("collided in left face");
-                    float re = (l - br) / vx;
-                    if(re < rewind) {
-                        rewind = re;
-                        dir = 2;
-                    }
-                }
-                if(vy > 0 && inside(bb, u, bu) && !isBlock(bx, by - 1)) {
-                    System.out.println("collided in upper face");
-                    float re = (u - bb) / vy;
-                    if(re < rewind){
-                        rewind = re;
-                        dir = 3;
-                    }
-                }
-                if(vy < 0 && inside(bb, d, bu) && !isBlock(bx, by + 1)) {
-                    System.out.println("collided in lower face");
-                    float re = (d - bu) / vy;
-                    if(re < rewind) {
-                        rewind = re;
-                        dir = 4;
-                    }
-                }
-
-                l -= vx * rewind;
-                r -= vx * rewind;
-                u -= vy * rewind;
-                d -= vy * rewind;
-                if(dir == 1 || dir == 2) {
                     vx = 0;
-                }else if(dir == 3 || dir == 4) {
+                    px = Math.min(px, bl - CHAR);
+                }
+                if(vx < 0 && intersect(bl, l, br, last_x) && !isBlock(bx + 1, by)) {
+                    System.out.println("collided in left face");
+                    vx = 0;
+                    px = Math.max(px, br);
+                }
+                if(vy > 0 && intersect(last_y + CHAR, bb, u, bu) && !isBlock(bx, by - 1)) {
+//                    System.out.println("collided in upper face");
                     vy = 0;
+                    py = Math.min(py, bb - CHAR);
+                }
+                if(vy < 0 && intersect(bb, d, bu, last_y) && !isBlock(bx, by + 1)) {
+//                    System.out.println("collided in lower face");
+                    vy = 0;
+                    py = Math.max(py, bu);
+                    grounded = true;
                 }
             }
         }
 
 
-        Game.character_x = l;
-        Game.character_y = d;
+        Game.character_x = px;
+        Game.character_y = py;
         Game.character_delta_x = vx;
         Game.character_delta_y = vy;
 
@@ -128,10 +102,7 @@ public class Movement {
     }
 
     public static void doMovement() {
-        isGrounded();
-        if (!grounded) {
-            Game.character_delta_y -= gravity;
-        }
+        Game.character_delta_y -= gravity;
 
         //fall safe for debugging
         if (Game.character_y <= 0) {
@@ -165,11 +136,6 @@ public class Movement {
         //apply friction and gravity
         Game.character_delta_x *= 0.9;
 
-        ArrayList<int[]> collisions = pixelCollision();
-//        InteractiveBlock.Interact(collisions);
-        //Collision_handling();
-
-
         //fall safe for debugging
         if (Game.character_y <= 0) {
             Game.character_y = 0;
@@ -177,6 +143,13 @@ public class Movement {
                 Game.character_delta_y = 0;
             }
         }
+
+        ArrayList<int[]> collisions = pixelCollision();
+//        InteractiveBlock.Interact(collisions);
+        //Collision_handling();
+
+        last_x = Game.character_x;
+        last_y = Game.character_y;
 
         //move character
         Game.character_x += Game.character_delta_x;
