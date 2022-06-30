@@ -261,7 +261,8 @@ public class Game extends ApplicationAdapter {
 		inventory.begin();
 
 		if(next_level){
-			level ++;
+			level++;
+			maploader.loadmap(level);
 			character_x = 490;
 			character_y = 490;
 			stamina_initialized = false;
@@ -315,6 +316,7 @@ public class Game extends ApplicationAdapter {
 				if (click_x > 1154 - 36 && click_x < 1154 + 36 &&
 						click_y > 952 - 36 && click_y < 952 + 36) {
 					inInventory = true;
+					next_level = true;
 				}
 			}
 		} else {
