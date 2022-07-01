@@ -135,7 +135,7 @@ public class Game extends ApplicationAdapter {
 		// inventory
 		inventory = new SpriteBatch();
 		inventory_icon = new Texture("inventory_icon.png");
-		inventory_UI = new Texture("inventory.png");
+		inventory_UI = new Texture("inventory_test.png");
 		inventory_selected = new Texture("inventory_selected.png");
 
 		//item titles
@@ -341,7 +341,7 @@ public class Game extends ApplicationAdapter {
 			}
 		} else {
 			inventory_processing();
-			inventory.draw(inventory_UI, character_x + 300, character_y - 250);
+			inventory.draw(inventory_UI, character_x + 300, character_y - 250 - 84);
 			//close
 			if (Gdx.input.isTouched()) {
 //				System.out.println("x = " + Gdx.input.getX());
@@ -362,14 +362,14 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(fries.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362);
 			inventory.draw(juice.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362);
 
-			inventory.draw(meat.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 102);
-			inventory.draw(pineapple.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 102);
-			inventory.draw(pizza.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362 - 102);
-			inventory.draw(ramen.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362 - 102);
-			inventory.draw(spaghetti.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362 - 102);
+			inventory.draw(meat.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 122);
+			inventory.draw(pineapple.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 122);
+			inventory.draw(pizza.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362 - 122);
+			inventory.draw(ramen.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362 - 122);
+			inventory.draw(spaghetti.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362 - 122);
 
-			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 204);
-			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 204);
+			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 244);
+			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
 
 			inventory.draw(cake_title, character_x+850, character_y+5);
 
@@ -382,6 +382,10 @@ public class Game extends ApplicationAdapter {
 //					}
 //				}
 //			}
+
+
+
+
 //			System.out.println(selected_item);
 			if (selected_item != 0) {
 				inventory.draw(inventory_selected, character_x + 343 + (selected_item % 5) * 102 - 1, character_y - 250 + 362 - (selected_item / 5) * 102 - 1);
