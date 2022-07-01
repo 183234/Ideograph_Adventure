@@ -75,6 +75,7 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_icon;
 	Texture inventory_UI;
 	Texture inventory_selected;
+	Texture cake_title;
 	float map_delta_x = 0;
 	float map_delta_y = 0;
 	float health = 4900;
@@ -137,8 +138,11 @@ public class Game extends ApplicationAdapter {
 		inventory_UI = new Texture("inventory.png");
 		inventory_selected = new Texture("inventory_selected.png");
 
+		//item titles
+		cake_title = new Texture("cake_title.png");
+
 		//maploader(?
-		maploader.loadmap(level);
+		maploader.loadmap(4);
 
 		//Load Map
 		map = new TmxMapLoader().load("level/0.tmx");
@@ -162,7 +166,7 @@ public class Game extends ApplicationAdapter {
 		7  / pizza            / 拔掉鳳梨的披薩
 		8  / ramen 		  	  / 抽槳用拉麵
 		9  / sunnyside_up_egg / 一顆蛋 似乎跟端午節立的但是同一顆
-		10 / spaghetti 		  /
+		10 / spaghetti 		  / 原本在冷凍包裝中的義大利麵
 		11 / taco             / taco
 		 */
 
@@ -365,6 +369,7 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 204);
 			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 204);
 
+			inventory.draw(cake_title, character_x+850, character_y+5);
 
 //			if(click_x-(character_x+343) % 102 < 90){
 ////				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
