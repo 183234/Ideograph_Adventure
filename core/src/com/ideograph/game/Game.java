@@ -15,10 +15,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 //import com.badlogic.gdx.math.Rectangle;
 //import com.badlogic.gdx.utils.Null;
@@ -81,7 +79,7 @@ public class Game extends ApplicationAdapter {
 	Texture cake_title;
 	float map_delta_x = 0;
 	float map_delta_y = 0;
-	float health = 4900;
+	float health = 100;
 	float stamina = 4900;
 	boolean jump = true;
 	int wall_jump = 0;
@@ -111,6 +109,9 @@ public class Game extends ApplicationAdapter {
 	TiledMapRenderer tiledMapRenderer;
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
+
+	SpriteBatch enemies_batch;
+	Enemies enemies;
 
 
 	@Override
@@ -201,6 +202,8 @@ public class Game extends ApplicationAdapter {
 		this.taco = new Food("taco","taco");
 
 		text_renderer = TextRenderer.getInstance();
+		enemies_batch = new SpriteBatch();
+		enemies = Enemies.getEnemies(1);
 	}
 
 	public void renderBackground() {
@@ -286,8 +289,7 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.begin();
 		death_screen.begin();
 		inventory.begin();
-
-		text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
+		enemies_batch.begin();
 
 		if(next_level) {
 			chill_2.stop();
@@ -438,8 +440,13 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
+		text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
+		enemies.render(enemies_batch);
+		enemies.attack();
+
 //		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
 		batch_character.end();
+		enemies_batch.end();
 		batch_vignette.end();
 		health_bar.end();
 		stamina_bar.end();
