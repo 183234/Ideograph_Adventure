@@ -3,14 +3,26 @@ package com.ideograph.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 
 public class InteractiveBlock {
 
-    public void Interact() {
-        int cellId = Game.tiledLayer.getCell((int) Game.character_x / 72, (int) (Game.character_y / 72)).getTile().getId();
-        if (cellId == 2) {
-            //rollreward();
+    public static void rollreward() {
+        double Food_rng = Math.random() * 100;
+        double Item_rng = Math.random() * 100;
+
+        for (int i = 0; i <= (int) Food_rng / 34; i++) {
+            Inventory.addFood((int) (Math.random() * 12), (int) (Math.random() * 3) + 1);
+        }
+
+    }
+
+    public static void Interact(TiledMapTileLayer.Cell cell) {
+        int cellId = cell.getTile().getId();
+        if (cellId == 3) {
+            rollreward();
+            System.out.println("interacted with chest");
             //set to interacted
         } else if (cellId == 4) {
             //load map

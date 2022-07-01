@@ -3,7 +3,10 @@ package com.ideograph.game;
 import com.badlogic.gdx.graphics.Texture;
 import org.w3c.dom.Text;
 
+import java.util.Objects;
+
 public class Item {
+    public int item_id;
     protected String item_name;
     protected String item_description;
     protected Texture item_texture;
@@ -12,6 +15,7 @@ public class Item {
         item_name = "Unnamed";
         item_description = "Nothing here";
     }
+
 }
 
 class Food extends Item {
@@ -24,6 +28,7 @@ class Food extends Item {
     int[] Swiftness = {0, 0, 0}; //Strength, duration(frames), possibility(%)
 
     public Food(String name, String desc) {
+
         this.item_name = name;
         this.item_description = desc;
         this.item_texture = new Texture(name+".png");

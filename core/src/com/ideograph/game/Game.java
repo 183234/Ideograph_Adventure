@@ -3,6 +3,7 @@
 package com.ideograph.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,6 +15,9 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 //import com.badlogic.gdx.math.Rectangle;
 //import com.badlogic.gdx.utils.Null;
 //import com.badlogic.gdx.utils.ScreenUtils;
@@ -42,12 +46,16 @@ public class Game extends ApplicationAdapter {
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
 	public int selected_item = 0;
+	static int level = 0;
+	static boolean next_level = false;
+	static MapLoader maploader = new MapLoader();
+	boolean inventory_initialized = false;
+	ArrayList<int[]> collsions = new ArrayList<>();
 	SpriteBatch batch_vignette;
 	Texture img_vignette;
 	SpriteBatch health_bar;
 	SpriteBatch stamina_bar;
 	static TiledMapTileLayer tiledLayer;
-	public int[] inventory_item = new int[25];
 	Texture health_bar_bg;
 
 	//level_tutorial level = new level_tutorial();
@@ -91,10 +99,7 @@ public class Game extends ApplicationAdapter {
 	//tiled map stuff
 	OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
-	static int level = 0;
-	boolean inventory_initialized = false;
-	static boolean next_level = false;
-	static MapLoader maploader = new MapLoader();
+
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
 
@@ -147,18 +152,18 @@ public class Game extends ApplicationAdapter {
 
 		/*
 		item_id / item_name / description
-		1  / sushi   		  / 好吃的壽司
-		2  / cake    		  / 看起來很好吃的蛋糕 ||實際上已經放了兩個月||
-		3  / cookie  		  /  一片手工餅乾
-		4  / fries            /  麥X勞的薯條
-		5  / juice   		  / 一杯果汁 ||內含酒精||
-		6  / meat    		  / 一塊肉
-		7  / pineapple 	      / 從鳳梨披薩拔下來的鳳梨
-		8  / pizza            / 拔掉鳳梨的披薩
-		9  / ramen 		  	  / 抽槳用拉麵
-		10 / sunnyside_up_egg / 一顆蛋 似乎跟端午節立的但是同一顆
-		11 / spaghetti 		  /
-		12 / taco             / taco
+		0  / sushi   		  / 好吃的壽司
+		1  / cake    		  / 看起來很好吃的蛋糕 ||實際上已經放了兩個月||
+		2  / cookie  		  /  一片手工餅乾
+		3  / fries            /  麥X勞的薯條
+		4  / juice   		  / 一杯果汁 ||內含酒精||
+		5  / meat    		  / 一塊肉
+		6  / pineapple 	      / 從鳳梨披薩拔下來的鳳梨
+		7  / pizza            / 拔掉鳳梨的披薩
+		8  / ramen 		  	  / 抽槳用拉麵
+		9  / sunnyside_up_egg / 一顆蛋 似乎跟端午節立的但是同一顆
+		10 / spaghetti 		  /
+		11 / taco             / taco
 		 */
 
 		this.sushi = new Food("sushi", "好吃的壽司");
@@ -229,9 +234,7 @@ public class Game extends ApplicationAdapter {
 		//43, 362(upper left)
 		if (!inventory_initialized) {
 			inventory_initialized = true;
-			for (int i = 0; i < 25; i += 1) {
-				inventory_item[i] = 0;
-			}
+
 		}
 		//selection input
 		if (Gdx.input.isTouched()) {
@@ -295,6 +298,17 @@ public class Game extends ApplicationAdapter {
 		// collision
 		Movement.doMovement();
 		renderBackground();
+		collsions = Movement.pixelCollision();
+		for (int[] cell : collsions) {
+//			System.out.println(tiledLayer.getCell(cell[0], cell[1]).getTile().getId());
+			if (tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 3 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 4 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 5) {
+//				System.out.println("you collided with a interactive block!");
+				if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+					InteractiveBlock.Interact(tiledLayer.getCell(cell[0], cell[1]));
+				}
+			}
+		}
+
 
 		//tiledmap_type_debug();
 
