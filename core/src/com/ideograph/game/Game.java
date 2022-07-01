@@ -298,7 +298,7 @@ public class Game extends ApplicationAdapter {
 		// collision
 		Movement.doMovement();
 		renderBackground();
-		collsions = Movement.pixelCollision();
+		collsions = Movement.getCollisions();
 		for (int[] cell : collsions) {
 //			System.out.println(tiledLayer.getCell(cell[0], cell[1]).getTile().getId());
 			if (tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 3 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 4 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 5) {

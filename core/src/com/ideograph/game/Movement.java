@@ -24,13 +24,10 @@ public class Movement {
     static int soft_jump_grace_period = 2;
     static int high_jump_period = 6;
     static float last_x, last_y;
-
-//    public enum Status {
-//        none, ground, jump, wall_right, wall_left;
-//    };
     static int status;
     static int last_kick = Status.none;
     static int kick_count = 0;
+    static ArrayList<int[]> collisions = new ArrayList<int[]>();
 
     public static boolean isBlock(int x, int y) {
         return Game.tiledLayer.getCell(x, y) != null;
@@ -60,7 +57,7 @@ public class Movement {
         float py = Game.character_y;
 
 
-        ArrayList<int[]> collisions = new ArrayList<int[]>();
+        collisions.clear();
 
         int block_x0 = (int)(px/BLOCK);
         int block_y0 = (int)(py/BLOCK);
@@ -148,13 +145,13 @@ public class Movement {
         if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && (status & Status.ground) == 0 && kick_cd <= 0){
             boolean kicked = false;
             if ((status & Status.wall_left) != 0 && last_kick != Status.wall_left) {
-                System.out.println("wall kicked: LEfT");
+//                System.out.println("wall kicked: LEfT");
                 kicked = true;
                 last_kick = Status.wall_left;
                 Game.character_delta_x = wallkick_acc_x;
                 Game.character_delta_y = wallkick_acc_y;
             } else if ((status & Status.wall_right) != 0 && last_kick != Status.wall_right) {
-                System.out.println("wall kicked: RIGHT");
+//                System.out.println("wall kicked: RIGHT");
                 kicked = true;
                 last_kick = Status.wall_right;
                 Game.character_delta_x = -wallkick_acc_x;
@@ -206,6 +203,10 @@ public class Movement {
         Game.character_x += Game.character_delta_x;
         Game.character_y += Game.character_delta_y;
 
+    }
+
+    public static ArrayList<int[]> getCollisions(){
+        return collisions;
     }
 
 }
