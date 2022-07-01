@@ -145,7 +145,7 @@ public class Game extends ApplicationAdapter {
 		maploader.loadmap(4);
 
 		//Load Map
-		map = new TmxMapLoader().load("level/0.tmx");
+//		map = new TmxMapLoader().load("level/0.tmx");
 		tiledLayer = (TiledMapTileLayer) maploader.map_current.getLayers().get(0);
 
 		// camera stuff
@@ -267,9 +267,11 @@ public class Game extends ApplicationAdapter {
 		death_screen.begin();
 		inventory.begin();
 
-		if(next_level){
+		if(next_level) {
 			level++;
 			maploader.loadmap(level);
+			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
+			tiledLayer = (TiledMapTileLayer) MapLoader.map_current.getLayers().get(0);
 			character_x = 490;
 			character_y = 490;
 			stamina_initialized = false;
