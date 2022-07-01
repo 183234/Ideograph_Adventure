@@ -159,7 +159,7 @@ public class Game extends ApplicationAdapter {
 		cake_title = new Texture("cake_title.png");
 
 		//maploader(?
-		maploader.loadmap(4);
+		maploader.loadmap(level);
 
 		//Load Map
 //		map = new TmxMapLoader().load("level/0.tmx");
@@ -355,7 +355,7 @@ public class Game extends ApplicationAdapter {
 
 		// rendering elements
 		batch_character.draw(img_character, (int) character_x, (int) character_y);
-		batch_vignette.draw(img_vignette, character_x - 490, character_y - 490);
+		batch_vignette.draw(img_vignette, character_x - 470, character_y - 530);
 		health_bar.draw(health_bar_bg, character_x + 335, character_y - 390);
 		health_bar.draw(health_region, character_x + 335, character_y - 390);
 		health_bar.draw(health_bar_outline, character_x + 331, character_y - 395);
@@ -368,22 +368,26 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(inventory_icon, character_x + 630, character_y - 420);
 			if (Gdx.input.isTouched()) {
 				// 1154 952 center
-				if (click_x > 1154 - 36 && click_x < 1154 + 36 &&
-						click_y > 952 - 36 && click_y < 952 + 36) {
+				// 1136 905 new center
+//				System.out.println("x = " + Gdx.input.getX());
+//				System.out.println("y = " + Gdx.input.getY());
+				if (click_x > 1136 - 36 && click_x < 1136 + 36 &&
+						click_y > 905 - 36 && click_y < 905 + 36) {
 					inInventory = true;
-					next_level = true;
+//					next_level = true;
 				}
 			}
 		} else {
 			inventory_processing();
-			inventory.draw(inventory_UI, character_x + 300, character_y - 250 - 84);
+			inventory.draw(inventory_UI, character_x + 300, character_y - 334);
 			//close
 			if (Gdx.input.isTouched()) {
 //				System.out.println("x = " + Gdx.input.getX());
 //				System.out.println("y = " + Gdx.input.getY());
 				// 1704 334 center
-				if (Gdx.input.getX() > 1704 - 15 && Gdx.input.getX() < 1704 + 15) {
-					if (Gdx.input.getY() > 334 - 15 && Gdx.input.getY() < 334 + 15) {
+				// 1685 286 new center
+				if (Gdx.input.getX() > 1685 - 15 && Gdx.input.getX() < 1685 + 15) {
+					if (Gdx.input.getY() > 286 - 15 && Gdx.input.getY() < 286 + 15) {
 						inInventory = false;
 //						System.out.println("owo");
 					}
