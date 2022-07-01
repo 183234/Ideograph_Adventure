@@ -18,7 +18,13 @@ public class InteractiveBlock {
 
     }
 
-    public static void Interact(TiledMapTileLayer.Cell cell) {
+    public static boolean isInteractive(int x, int y) {
+        int block_id = Game.tiledLayer.getCell(x, y).getTile().getId();
+        return block_id == 3 || block_id == 4 || block_id == 5;
+    }
+
+    public static void Interact(int x, int y) {
+        TiledMapTileLayer.Cell cell = Game.tiledLayer.getCell(x, y);
         int cellId = cell.getTile().getId();
         if (cellId == 3) {
             rollreward();

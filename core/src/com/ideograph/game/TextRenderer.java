@@ -2,7 +2,6 @@ package com.ideograph.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
@@ -12,9 +11,7 @@ public class TextRenderer {
     private FreeTypeFontGenerator gen;
 
     private TextRenderer(){
-//        gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oxygen-Regular.ttf"));
         gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oxygen/Oxygen-Regular.ttf"));
-
     }
 
     public void render(SpriteBatch batch, String text, int x,int y) {

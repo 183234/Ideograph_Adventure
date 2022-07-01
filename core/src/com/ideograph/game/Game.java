@@ -58,7 +58,7 @@ public class Game extends ApplicationAdapter {
 	SpriteBatch stamina_bar;
 	static TiledMapTileLayer tiledLayer;
 	Texture health_bar_bg;
-	TextRenderer text_renderer = TextRenderer.getInstance();
+	TextRenderer text_renderer;
 
 	//level_tutorial level = new level_tutorial();
 	Texture health_bar_color;
@@ -121,7 +121,8 @@ public class Game extends ApplicationAdapter {
 
 
 	@Override
-	public void create() {batch_character = new SpriteBatch();
+	public void create() {
+		batch_character = new SpriteBatch();
 		img_character = new Texture("u6307(64x).png");
 		batch_vignette = new SpriteBatch();
 		img_vignette = new Texture("vignette.png");
@@ -211,6 +212,7 @@ public class Game extends ApplicationAdapter {
 		num8 = new Texture("8.png");
 		num9 = new Texture("9.png");
 
+		text_renderer = TextRenderer.getInstance();
 	}
 
 	public void renderBackground() {
@@ -338,10 +340,12 @@ public class Game extends ApplicationAdapter {
 		collsions = Movement.getCollisions();
 		for (int[] cell : collsions) {
 //			System.out.println(tiledLayer.getCell(cell[0], cell[1]).getTile().getId());
-			if (tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 3 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 4 || tiledLayer.getCell(cell[0], cell[1]).getTile().getId() == 5) {
-//				System.out.println("you collided with a interactive block!");
+			int x = cell[0];
+			int y = cell[1];
+			if (InteractiveBlock.isInteractive(x, y)) {
+				System.out.println("you collided with a interactive block!");
 				if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-					InteractiveBlock.Interact(tiledLayer.getCell(cell[0], cell[1]));
+					InteractiveBlock.Interact(x, y);
 				}
 			}
 		}
