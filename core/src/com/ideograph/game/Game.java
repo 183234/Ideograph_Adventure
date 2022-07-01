@@ -1,4 +1,5 @@
 // PixelCat was once here :ohayo: !
+// Thonk
 
 package com.ideograph.game;
 
@@ -57,6 +58,7 @@ public class Game extends ApplicationAdapter {
 	SpriteBatch stamina_bar;
 	static TiledMapTileLayer tiledLayer;
 	Texture health_bar_bg;
+	TextRenderer text_renderer = TextRenderer.getInstance();
 
 	//level_tutorial level = new level_tutorial();
 	Texture health_bar_color;
@@ -103,6 +105,20 @@ public class Game extends ApplicationAdapter {
 
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
+
+
+	Texture num0;
+	Texture num1;
+	Texture num2;
+	Texture num3;
+	Texture num4;
+	Texture num5;
+	Texture num6;
+	Texture num7;
+	Texture num8;
+	Texture num9;
+
+
 
 	@Override
 	public void create() {batch_character = new SpriteBatch();
@@ -182,6 +198,19 @@ public class Game extends ApplicationAdapter {
 		this.sunnyside_up_egg = new Food("sunnyside_egg","一顆蛋 似乎跟端午節立的但是同一顆");
 		this.spaghetti = new Food("spaghetti","原本在冷凍包裝中的義大利麵");
 		this.taco = new Food("taco","taco");
+
+
+		num0 = new Texture("0.png");
+		num1 = new Texture("1.png");
+		num2 = new Texture("2.png");
+		num3 = new Texture("3.png");
+		num4 = new Texture("4.png");
+		num5 = new Texture("5.png");
+		num6 = new Texture("6.png");
+		num7 = new Texture("7.png");
+		num8 = new Texture("8.png");
+		num9 = new Texture("9.png");
+
 	}
 
 	public void renderBackground() {
@@ -267,6 +296,8 @@ public class Game extends ApplicationAdapter {
 		death_screen.begin();
 		inventory.begin();
 
+		text_renderer.render(batch_vignette, "owowowo", 100, 100);
+
 		if(next_level) {
 			level++;
 			maploader.loadmap(level);
@@ -347,12 +378,20 @@ public class Game extends ApplicationAdapter {
 //				System.out.println("x = " + Gdx.input.getX());
 //				System.out.println("y = " + Gdx.input.getY());
 				// 1704 334 center
-				if (Gdx.input.getX() > 1704 - 10 && Gdx.input.getX() < 1704 + 10) {
-					if (Gdx.input.getY() > 334 - 10 && Gdx.input.getY() < 334 + 10) {
+				if (Gdx.input.getX() > 1704 - 15 && Gdx.input.getX() < 1704 + 15) {
+					if (Gdx.input.getY() > 334 - 15 && Gdx.input.getY() < 334 + 15) {
 						inInventory = false;
 //						System.out.println("owo");
 					}
 				}
+
+				/*
+				if (Gdx.input.getX() > 1704 - 15 && Gdx.input.getX() < 1704 + 15)
+
+
+				 */
+
+
 			}
 
 			// foods
@@ -372,6 +411,9 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
 
 			inventory.draw(cake_title, character_x+850, character_y+5);
+
+
+			inventory.draw(num9, character_x + 300 + 43 + 33, character_y - 250 + 362 - 33);
 
 //			if(click_x-(character_x+343) % 102 < 90){
 ////				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
@@ -411,6 +453,7 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.dispose();
 		death_screen.dispose();
 		inventory.dispose();
+		text_renderer.dispose();
 	}
 }
 
