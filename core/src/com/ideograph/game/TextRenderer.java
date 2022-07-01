@@ -10,15 +10,16 @@ public class TextRenderer {
     private static TextRenderer _instance = null;
     private FreeTypeFontGenerator gen;
 
-    private TextRenderer(){
-        gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oxygen/Oxygen-Regular.ttf"));
+    private TextRenderer() {
+        String font_path = "fonts/Lxgw-WenKai/TC/LXGWWenKaiTC-Regular.ttf";
+        gen = new FreeTypeFontGenerator(Gdx.files.internal(font_path));
     }
 
-    public void render(SpriteBatch batch, String text, int x,int y) {
+    public void draw(SpriteBatch batch, String text, int size, float x, float y) {
         FreeTypeFontParameter param = new FreeTypeFontParameter();
-        param.size = 14;
+        param.size = size;
         param.characters = text;
-        BitmapFont font =gen.generateFont(param);
+        BitmapFont font = gen.generateFont(param);
         font.draw(batch, text, x, y);
     }
 

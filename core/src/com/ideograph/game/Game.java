@@ -107,19 +107,6 @@ public class Game extends ApplicationAdapter {
 	Weapon uwu = new Weapon();
 
 
-	Texture num0;
-	Texture num1;
-	Texture num2;
-	Texture num3;
-	Texture num4;
-	Texture num5;
-	Texture num6;
-	Texture num7;
-	Texture num8;
-	Texture num9;
-
-
-
 	@Override
 	public void create() {
 		batch_character = new SpriteBatch();
@@ -199,18 +186,6 @@ public class Game extends ApplicationAdapter {
 		this.sunnyside_up_egg = new Food("sunnyside_egg","一顆蛋 似乎跟端午節立的但是同一顆");
 		this.spaghetti = new Food("spaghetti","原本在冷凍包裝中的義大利麵");
 		this.taco = new Food("taco","taco");
-
-
-		num0 = new Texture("0.png");
-		num1 = new Texture("1.png");
-		num2 = new Texture("2.png");
-		num3 = new Texture("3.png");
-		num4 = new Texture("4.png");
-		num5 = new Texture("5.png");
-		num6 = new Texture("6.png");
-		num7 = new Texture("7.png");
-		num8 = new Texture("8.png");
-		num9 = new Texture("9.png");
 
 		text_renderer = TextRenderer.getInstance();
 	}
@@ -298,7 +273,7 @@ public class Game extends ApplicationAdapter {
 		death_screen.begin();
 		inventory.begin();
 
-		text_renderer.render(batch_vignette, "owowowo", 100, 100);
+		text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
 
 		if(next_level) {
 			level++;
@@ -417,7 +392,8 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(cake_title, character_x+850, character_y+5);
 
 
-			inventory.draw(num9, character_x + 300 + 43 + 33, character_y - 250 + 362 - 33);
+			// wrong offset. fix later
+			text_renderer.draw(inventory, "9", 14, character_x + 300 + 43 + 33, character_y - 250 + 362 - 33);
 
 //			if(click_x-(character_x+343) % 102 < 90){
 ////				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
