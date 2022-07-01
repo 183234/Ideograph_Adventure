@@ -23,6 +23,14 @@ public class TextRenderer {
         font.draw(batch, text, x, y);
     }
 
+    public static TextRenderer getInstance() {
+        if (_instance == null) {
+            _instance = new TextRenderer();
+        }
+        return _instance;
+    }
+
+
     public void dispose() {
         gen.dispose();
     }

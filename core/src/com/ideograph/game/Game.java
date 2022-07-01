@@ -5,6 +5,7 @@ package com.ideograph.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -99,16 +100,28 @@ public class Game extends ApplicationAdapter {
 	Food sunnyside_up_egg;
 	Food spaghetti;
 	Food taco;
+	Sound menu_select;
+	Sound menu_back;
+	Sound death;
+	Sound level_start;
+	Sound chill_1;
+	Sound chill_2;
 	//tiled map stuff
 	OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
-
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
 
 
 	@Override
 	public void create() {
+		menu_select = Gdx.audio.newSound(Gdx.files.internal("Sounds/menu_select.ogg"));
+		menu_back = Gdx.audio.newSound(Gdx.files.internal("Sounds/menu_back.ogg"));
+		death = Gdx.audio.newSound(Gdx.files.internal("Sounds/death.ogg"));
+		level_start = Gdx.audio.newSound(Gdx.files.internal("Sounds/level_start.ogg"));
+		chill_1 = Gdx.audio.newSound(Gdx.files.internal("Sounds/chill_1.ogg"));
+		chill_2 = Gdx.audio.newSound(Gdx.files.internal("Sounds/chill_2.ogg"));
+
 		batch_character = new SpriteBatch();
 		img_character = new Texture("u6307(64x).png");
 		batch_vignette = new SpriteBatch();
@@ -237,6 +250,7 @@ public class Game extends ApplicationAdapter {
 		character_delta_y = 0;
 		health_initialized = false;
 		stamina_initialized = false;
+		death.play();
 	}
 
 	public void inventory_processing() {
@@ -276,6 +290,7 @@ public class Game extends ApplicationAdapter {
 		text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
 
 		if(next_level) {
+			chill_2.stop();
 			level++;
 			maploader.loadmap(level);
 			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
@@ -285,6 +300,9 @@ public class Game extends ApplicationAdapter {
 			stamina_initialized = false;
 			health_initialized = false;
 			next_level = false;
+			level_start.play(0.5f);
+			chill_2.loop(0.1f);
+
 		}
 
 		if (Gdx.input.isTouched()) {
@@ -348,6 +366,7 @@ public class Game extends ApplicationAdapter {
 //				System.out.println("y = " + Gdx.input.getY());
 				if (click_x > 1136 - 36 && click_x < 1136 + 36 &&
 						click_y > 905 - 36 && click_y < 905 + 36) {
+					menu_select.play();
 					inInventory = true;
 //					next_level = true;
 				}
@@ -363,6 +382,7 @@ public class Game extends ApplicationAdapter {
 				// 1685 286 new center
 				if (Gdx.input.getX() > 1685 - 15 && Gdx.input.getX() < 1685 + 15) {
 					if (Gdx.input.getY() > 286 - 15 && Gdx.input.getY() < 286 + 15) {
+						menu_back.play();
 						inInventory = false;
 //						System.out.println("owo");
 					}
@@ -438,6 +458,10 @@ public class Game extends ApplicationAdapter {
 		death_screen.dispose();
 		inventory.dispose();
 		text_renderer.dispose();
+		level_start.dispose();
+		menu_select.dispose();
+		menu_back.dispose();
+		death.dispose();
 	}
 }
 
