@@ -11,19 +11,13 @@ public class TextRenderer {
     private FreeTypeFontGenerator gen;
 
     private TextRenderer() {
-        gen = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Oxygen/Oxygen-Regular.ttf"));
+        String font_path = "fonts/Lxgw-WenKai/TC/LXGWWenKaiTC-Regular.ttf";
+        gen = new FreeTypeFontGenerator(Gdx.files.internal(font_path));
     }
 
-    public static TextRenderer getInstance() {
-        if (_instance == null) {
-            _instance = new TextRenderer();
-        }
-        return _instance;
-    }
-
-    public void render(SpriteBatch batch, String text, int x, int y) {
+    public void draw(SpriteBatch batch, String text, int size, float x, float y) {
         FreeTypeFontParameter param = new FreeTypeFontParameter();
-        param.size = 14;
+        param.size = size;
         param.characters = text;
         BitmapFont font = gen.generateFont(param);
         font.draw(batch, text, x, y);
