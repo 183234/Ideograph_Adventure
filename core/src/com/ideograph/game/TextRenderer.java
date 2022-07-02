@@ -21,6 +21,7 @@ public class TextRenderer {
         param.characters = text;
         BitmapFont font = gen.generateFont(param);
         font.draw(batch, text, x, y);
+        gen.dispose();
     }
 
     public static TextRenderer getInstance() {

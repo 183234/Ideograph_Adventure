@@ -3,8 +3,8 @@
     "x": 1,
     "y": 1,
     "bound_left": 1,
-    "bound_right": 1,
-    "speed": 0,
+    "bound_right": 4,
+    "speed": 9,
     "texture": "ideograph_advantage(72x).png"
   }
 ]

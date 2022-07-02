@@ -85,6 +85,7 @@ public class Game extends ApplicationAdapter {
 	int wall_jump = 0;
 	int click_x = 0;
 	int click_y = 0;
+	int isp = 0; // inventory selected position
 	// foods :yum:
 	Food sushi;
 	Food cake;
@@ -291,7 +292,7 @@ public class Game extends ApplicationAdapter {
 		inventory.begin();
 		enemies_batch.begin();
 
-		if(next_level) {
+		if (next_level) {
 			chill_2.stop();
 			level++;
 			maploader.loadmap(level);
@@ -382,21 +383,55 @@ public class Game extends ApplicationAdapter {
 //				System.out.println("y = " + Gdx.input.getY());
 				// 1704 334 center
 				// 1685 286 new center
-				if (Gdx.input.getX() > 1685 - 15 && Gdx.input.getX() < 1685 + 15) {
-					if (Gdx.input.getY() > 286 - 15 && Gdx.input.getY() < 286 + 15) {
+				if (Gdx.input.getX() > 1685 - 17 && Gdx.input.getX() < 1685 + 17) {
+					if (Gdx.input.getY() > 286 - 17 && Gdx.input.getY() < 286 + 17) {
 						menu_back.play();
 						inInventory = false;
 //						System.out.println("owo");
 					}
 				}
+				if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+					System.out.print("x = ");
+					System.out.println(Gdx.input.getX() - character_x);
+					System.out.print("y = ");
+					System.out.println(Gdx.input.getY() - character_y);
+				}
 
-				/*
-				if (Gdx.input.getX() > 1704 - 15 && Gdx.input.getX() < 1704 + 15)
+				int selected = 0;
+				int check_x = 0;
+				int check_y = 0;
+				if (click_x > 490 + 338 && click_x < 490 + 836) {
+					if ((click_x - 338 - 490) % 102 < 90) {
+						selected += ((click_x - 338 - 490) / 102);
+						check_x = 1;
+					}
+				}
+//					System.out.println(selected);
+				if (click_y >= 333 && click_y <= 692) {
+					if ((click_y - 333) % 122 < 109) {
+						selected += (5 * (((click_y - 333) / 122)));
+						check_y = 1;
+					}
+				}
+
+				if (check_x + check_y > 0 && selected < 12) {
+					isp = selected;
+//						System.out.println(isp);
+				}
+			}
 
 
-				 */
-
-
+			// wrong offset. fix later
+			for (int i = 0; i < 12; i++) {
+				//text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]),16, character_x + 300 + 43 + 35 + (i % 5) * 102, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
+			}
+			if (click_x - (character_x + 343) % 102 < 90) {
+//				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
+				if (click_y - (character_y - 112) % 102 < 90) {
+					if (0 < (click_y - (character_y - 112)) / 102 && (click_y - (character_y - 112)) / 102 < 5) {
+						selected_item = (int) ((click_y - (character_y - 112)) / 102 * 5 + (click_x - (character_x + 343)) / 102);
+					}
+				}
 			}
 
 			// foods
@@ -415,36 +450,19 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 244);
 			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
 
-			inventory.draw(cake_title, character_x+850, character_y+5);
-
-
-			// wrong offset. fix later
-			text_renderer.draw(inventory, "9", 14, character_x + 300 + 43 + 33, character_y - 250 + 362 - 33);
-
-//			if(click_x-(character_x+343) % 102 < 90){
-////				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
-//					if(click_y-(character_y-112) % 102 < 90){
-//						if(0 < (click_y-(character_y-112)) / 102 && (click_y-(character_y-112))/102 < 5 ){
-//							selected_item = (int) ((click_y-(character_y-112))/102*5+(click_x-(character_x+343))/102);
-//						}
-//					}
-//				}
-//			}
-
-
+			inventory.draw(cake_title, character_x + 850, character_y + 5);
 
 
 //			System.out.println(selected_item);
-			if (selected_item != 0) {
-				inventory.draw(inventory_selected, character_x + 343 + (selected_item % 5) * 102 - 1, character_y - 250 + 362 - (selected_item / 5) * 102 - 1);
-			}
+			inventory.draw(inventory_selected, character_x + 338 + (isp % 5) * 102 - 1, character_y - 250 + 362 - 22 - (isp / 5) * 122 - 1);
 		}
 
-		text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
+		//text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
 		enemies.render(enemies_batch);
 		enemies.attack();
 
 //		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
+
 		batch_character.end();
 		enemies_batch.end();
 		batch_vignette.end();
@@ -452,10 +470,12 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.end();
 		death_screen.end();
 		inventory.end();
+
 	}
 
+
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch_character.dispose();
 		img_character.dispose();
 		batch_vignette.dispose();
