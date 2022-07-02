@@ -423,7 +423,13 @@ public class Game extends ApplicationAdapter {
 
 			// wrong offset. fix later
 			for (int i = 0; i < 12; i++) {
-				text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 35 + (i % 5) * 102, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
+				int tmp = Inventory.Food_Inv[i];
+				int digit = 0;
+				while (tmp>0){
+					tmp = (int) (tmp/10);
+					digit++;
+				}
+				text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 33 + (i % 5) * 102 - digit * 2, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
 			}
 			if (click_x - (character_x + 343) % 102 < 90) {
 //				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
