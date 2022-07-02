@@ -339,7 +339,7 @@ public class Game extends ApplicationAdapter {
 			int x = cell[0];
 			int y = cell[1];
 			if (InteractiveBlock.isInteractive(x, y)) {
-				System.out.println("you collided with a interactive block!");
+//				System.out.println("you collided with a interactive block!");
 				if (Gdx.input.isKeyPressed(Input.Keys.F)) {
 					InteractiveBlock.Interact(x, y);
 				}
@@ -423,7 +423,7 @@ public class Game extends ApplicationAdapter {
 
 			// wrong offset. fix later
 			for (int i = 0; i < 12; i++) {
-				//text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]),16, character_x + 300 + 43 + 35 + (i % 5) * 102, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
+				text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 35 + (i % 5) * 102, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
 			}
 			if (click_x - (character_x + 343) % 102 < 90) {
 //				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
@@ -457,7 +457,7 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(inventory_selected, character_x + 338 + (isp % 5) * 102 - 1, character_y - 250 + 362 - 22 - (isp / 5) * 122 - 1);
 		}
 
-		//text_renderer.draw(batch_vignette, "喵喵喵 meow", 14, 0, 0);
+		text_renderer.draw(batch_vignette, "98712634", 0, 0);
 		enemies.render(enemies_batch);
 		enemies.attack();
 
