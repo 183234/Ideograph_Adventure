@@ -43,6 +43,8 @@ public class Game extends ApplicationAdapter {
 	public boolean isDead = false;
 	public boolean stamina_initialized = false;
 	static TiledMap map;
+	public boolean death_sound_played = false;
+	public int death_screen_delay = 100;
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
 	public int selected_item = 0;
@@ -89,6 +91,12 @@ public class Game extends ApplicationAdapter {
 	Texture sushi_title;
 	Texture taco_title;
 
+	Texture use;
+	Texture inventory_no_item;
+	Texture inventory_health_stamina_full;
+	Texture inventory_use_success;
+	Texture inventory_temp;
+
 	float map_delta_x = 0;
 	float map_delta_y = 0;
 	float health = 100;
@@ -98,6 +106,10 @@ public class Game extends ApplicationAdapter {
 	int click_x = 0;
 	int click_y = 0;
 	int isp = 0; // inventory selected position
+	int inventory_das = 48;
+	boolean inventory_dased = false;
+	int inventory_arr = 12;
+	int hint = 0;
 	// foods :yum:
 	Food sushi;
 	Food cake;
@@ -185,6 +197,12 @@ public class Game extends ApplicationAdapter {
 		sushi_title = new Texture("sushi_title.png");
 		taco_title = new Texture("taco_title.png");
 
+		use = new Texture("use.png");
+		inventory_use_success = new Texture("inventory_use_success.png");
+		inventory_health_stamina_full = new Texture("inventory_health_stamina_full.png");
+		inventory_no_item = new Texture("inventory_no_item.png");
+		inventory_temp = new Texture("inventory_temp.png");
+
 		//maploader(?
 		maploader.loadmap(level);
 
@@ -242,7 +260,7 @@ public class Game extends ApplicationAdapter {
 
 
 		if (isDead) {
-			camera.position.set((int) character_x + 490, character_y, 1);
+			camera.position.set((int) character_x + 490, character_y, 0);
 		}
 
 		tiledMapRenderer.setView(camera);
@@ -255,7 +273,7 @@ public class Game extends ApplicationAdapter {
 			health_initialized = true;
 		}
 		//health_cur --;
-		if (health_cur < 0) {
+		if (health_cur <= 0) {
 			health_cur = 0;
 			isDead = true;
 		}
@@ -273,13 +291,15 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public void death() {
+		if(!death_sound_played) {
+			death.play();
+			death_sound_played = true;
+		}
 		character_x = 490;
 		character_y = 490;
 		character_delta_x = 0;
 		character_delta_y = 0;
-		health_initialized = false;
-		stamina_initialized = false;
-		death.play();
+
 	}
 
 	public void inventory_processing() {
@@ -330,7 +350,6 @@ public class Game extends ApplicationAdapter {
 			next_level = false;
 			level_start.play(0.5f);
 			chill_2.loop(0.1f);
-
 		}
 
 		if (Gdx.input.isTouched()) {
@@ -346,12 +365,21 @@ public class Game extends ApplicationAdapter {
 		if (isDead) {
 			death();
 			if (death_screen_opacity < 100) {
-				death_screen_opacity++;
+				if(death_screen_delay > 0){
+					death_screen_delay--;
+				}else{
+					death_screen_opacity++;
+				}
 				death_screen.setColor(death_screen.getColor().r, death_screen.getColor().g, death_screen.getColor().b, (100 - death_screen_opacity) / 100f);
-				death_screen.draw(you_died, character_x - 490, character_y - 490);
+				death_screen.draw(you_died, character_x - 530, character_y - 490);
 			} else {
 				death_screen_opacity = 0;
+				death_screen_delay = 100;
 				isDead = false;
+				death_sound_played = false;
+				health_initialized = false;
+				stamina_initialized = false;
+				inInventory = false;
 			}
 		}
 
@@ -375,158 +403,235 @@ public class Game extends ApplicationAdapter {
 		//tiledmap_type_debug();
 
 		// rendering elements
-		batch_character.draw(img_character, (int) character_x, (int) character_y);
-		batch_vignette.draw(img_vignette, character_x - 470, character_y - 530);
-		health_bar.draw(health_bar_bg, character_x + 335, character_y - 390);
-		health_bar.draw(health_region, character_x + 335, character_y - 390);
-		health_bar.draw(health_bar_outline, character_x + 331, character_y - 395);
-		stamina_bar.draw(stamina_bar_bg, character_x + 335, character_y - 410);
-		stamina_bar.draw(stamina_region, character_x + 335, character_y - 410);
-		stamina_bar.draw(stamina_bar_outline, character_x + 331, character_y - 415);
-		text_renderer.draw(stamina_bar, ((int)stamina_cur)+"/"+((int)stamina), character_x+335, character_y-398);
-
+		if(!isDead) {
+			batch_character.draw(img_character, (int) character_x, (int) character_y);
+			batch_vignette.draw(img_vignette, character_x - 470, character_y - 530);
+			health_bar.draw(health_bar_bg, character_x + 335, character_y - 390);
+			health_bar.draw(health_region, character_x + 335, character_y - 390);
+			health_bar.draw(health_bar_outline, character_x + 331, character_y - 395);
+			stamina_bar.draw(stamina_bar_bg, character_x + 335, character_y - 410);
+			stamina_bar.draw(stamina_region, character_x + 335, character_y - 410);
+			stamina_bar.draw(health_bar_outline, character_x + 331, character_y - 415);
+			text_renderer.draw(stamina_bar, ((int) stamina_cur) + "/" + ((int) stamina), character_x + 337, character_y - 398);
+			text_renderer.draw(stamina_bar, ((int) health_cur) + "/" + ((int) health), character_x + 337, character_y - 373);
+		}
 		// inventory
-		if (!inInventory) {
-			inventory.draw(inventory_icon, character_x + 630, character_y - 420);
-			if (Gdx.input.isTouched()) {
-				// 1154 952 center
-				// 1136 905 new center
+		if(!isDead) {
+			if (!inInventory) {
+				inventory.draw(inventory_icon, character_x + 630, character_y - 420);
+				if (Gdx.input.isTouched()) {
+					// 1154 952 center
+					// 1136 905 new center
 //				System.out.println("x = " + Gdx.input.getX());
 //				System.out.println("y = " + Gdx.input.getY());
-				if (click_x > 1136 - 36 && click_x < 1136 + 36 &&
-						click_y > 905 - 36 && click_y < 905 + 36) {
-					menu_select.play();
-					inInventory = true;
+					if (click_x > 1136 - 36 && click_x < 1136 + 36 &&
+							click_y > 905 - 36 && click_y < 905 + 36) {
+						menu_select.play();
+						inInventory = true;
+						hint = 0;
 //					next_level = true;
+					}
 				}
-			}
-		} else {
-			inventory_processing();
-			inventory.draw(inventory_UI, character_x + 300, character_y - 334);
-			//close
-			if (Gdx.input.isTouched()) {
+			} else {
+				inventory_processing();
+				inventory.draw(inventory_UI, character_x + 300, character_y - 334);
+				//close
+				if (Gdx.input.isTouched()) {
 //				System.out.println("x = " + Gdx.input.getX());
 //				System.out.println("y = " + Gdx.input.getY());
-				// 1704 334 center
-				// 1685 286 new center
-				if (Gdx.input.getX() > 1685 - 17 && Gdx.input.getX() < 1685 + 17) {
-					if (Gdx.input.getY() > 286 - 17 && Gdx.input.getY() < 286 + 17) {
-						menu_back.play();
-						inInventory = false;
+					// 1704 334 center
+					// 1685 286 new center
+					if (Gdx.input.getX() > 1685 - 17 && Gdx.input.getX() < 1685 + 17) {
+						if (Gdx.input.getY() > 286 - 17 && Gdx.input.getY() < 286 + 17) {
+							menu_back.play();
+							inInventory = false;
 //						System.out.println("owo");
+						}
 					}
-				}
-				if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-					System.out.print("x = ");
-					System.out.println(Gdx.input.getX() - character_x);
-					System.out.print("y = ");
-					System.out.println(Gdx.input.getY() - character_y);
-				}
+					if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+						System.out.print("x = ");
+						System.out.println(Gdx.input.getX() - 490);
+						System.out.print("y = ");
+						System.out.println(Gdx.input.getY() - 490);
+					}
 
-				int selected = 0;
-				int check_x = 0;
-				int check_y = 0;
-				if (click_x > 490 + 338 && click_x < 490 + 836) {
-					if ((click_x - 338 - 490) % 102 < 90) {
-						selected += ((click_x - 338 - 490) / 102);
-						check_x = 1;
+					int selected = 0;
+					int check_x = 0;
+					int check_y = 0;
+					if (click_x > 490 + 338 && click_x < 490 + 836) {
+						if ((click_x - 338 - 490) % 102 < 90) {
+							selected += ((click_x - 338 - 490) / 102);
+							check_x = 1;
+						}
 					}
-				}
 //					System.out.println(selected);
-				if (click_y >= 333 && click_y <= 692) {
-					if ((click_y - 333) % 122 < 109) {
-						selected += (5 * (((click_y - 333) / 122)));
-						check_y = 1;
+					if (click_y >= 333 && click_y <= 692) {
+						if ((click_y - 333) % 122 < 109) {
+							selected += (5 * (((click_y - 333) / 122)));
+							check_y = 1;
+						}
 					}
-				}
 
-				if (check_x + check_y > 0 && selected < 12) {
-					isp = selected;
+					if (check_x * check_y > 0 && selected < 12) {
+						isp = selected;
 //						System.out.println(isp);
-				}
-			}
-
-
-			// wrong offset. fix later
-			for (int i = 0; i < 12; i++) {
-				int tmp = Inventory.Food_Inv[i];
-				int digit = 0;
-				while (tmp>0){
-					tmp = (int) (tmp/10);
-					digit++;
-				}
-				text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 33 + (i % 5) * 102 - digit * 2, character_y - 250 + 362 - 7 - (int)(i / 5) * 122);
-			}
-			if (click_x - (character_x + 343) % 102 < 90) {
-//				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
-				if (click_y - (character_y - 112) % 102 < 90) {
-					if (0 < (click_y - (character_y - 112)) / 102 && (click_y - (character_y - 112)) / 102 < 5) {
-						selected_item = (int) ((click_y - (character_y - 112)) / 102 * 5 + (click_x - (character_x + 343)) / 102);
 					}
 				}
-			}
-
-			// foods
-			inventory.draw(sushi.item_texture, character_x + 300 + 43, character_y - 250 + 362);
-			inventory.draw(cake.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362);
-			inventory.draw(cookie.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362);
-			inventory.draw(fries.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362);
-			inventory.draw(juice.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362);
-
-			inventory.draw(meat.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 122);
-			inventory.draw(pineapple.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 122);
-			inventory.draw(pizza.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362 - 122);
-			inventory.draw(ramen.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362 - 122);
-			inventory.draw(spaghetti.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362 - 122);
-
-			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 244);
-			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
-
-			if(isp == 0) {
-				inventory.draw(sushi_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 1) {
-				inventory.draw(cake_title, character_x + 851, character_y + 5);
-			}
-			if(isp == 2) {
-				inventory.draw(cookie_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 3) {
-				inventory.draw(fries_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 4) {
-				inventory.draw(juice_title, character_x + 852, character_y + 5);
-			}
-
-			if(isp == 5) {
-				inventory.draw(meat_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 6) {
-				inventory.draw(pineapple_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 7) {
-				inventory.draw(pizza_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 8) {
-				inventory.draw(ramen_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 9) {
-				inventory.draw(spaghetti_title, character_x + 852, character_y + 5);
-			}
-
-			if(isp == 10) {
-				inventory.draw(egg_title, character_x + 852, character_y + 5);
-			}
-			if(isp == 11) {
-				inventory.draw(taco_title, character_x + 852, character_y + 5);
-			}
 
 
+				// wrong offset. fix later
+				for (int i = 0; i < 12; i++) {
+					int tmp = Inventory.Food_Inv[i];
+					int digit = 0;
+					while (tmp > 0) {
+						tmp = (int) (tmp / 10);
+						digit++;
+					}
+					text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 33 + (i % 5) * 102 - digit * 2, character_y - 250 + 362 - 7 - (int) (i / 5) * 122);
+				}
+				if (click_x - (character_x + 343) % 102 < 90) {
+//				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
+					if (click_y - (character_y - 112) % 102 < 90) {
+						if (0 < (click_y - (character_y - 112)) / 102 && (click_y - (character_y - 112)) / 102 < 5) {
+							selected_item = (int) ((click_y - (character_y - 112)) / 102 * 5 + (click_x - (character_x + 343)) / 102);
+						}
+					}
+				}
 
+				// foods
+				inventory.draw(sushi.item_texture, character_x + 300 + 43, character_y - 250 + 362);
+				inventory.draw(cake.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362);
+				inventory.draw(cookie.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362);
+				inventory.draw(fries.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362);
+				inventory.draw(juice.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362);
+
+				inventory.draw(meat.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 122);
+				inventory.draw(pineapple.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 122);
+				inventory.draw(pizza.item_texture, character_x + 300 + 43 + 204, character_y - 250 + 362 - 122);
+				inventory.draw(ramen.item_texture, character_x + 300 + 43 + 306, character_y - 250 + 362 - 122);
+				inventory.draw(spaghetti.item_texture, character_x + 300 + 43 + 408, character_y - 250 + 362 - 122);
+
+				inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 244);
+				inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
+
+				if (isp == 0) {
+					inventory.draw(sushi_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 1) {
+					inventory.draw(cake_title, character_x + 851, character_y + 5);
+				}
+				if (isp == 2) {
+					inventory.draw(cookie_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 3) {
+					inventory.draw(fries_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 4) {
+					inventory.draw(juice_title, character_x + 852, character_y + 5);
+				}
+
+				if (isp == 5) {
+					inventory.draw(meat_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 6) {
+					inventory.draw(pineapple_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 7) {
+					inventory.draw(pizza_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 8) {
+					inventory.draw(ramen_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 9) {
+					inventory.draw(spaghetti_title, character_x + 852, character_y + 5);
+				}
+
+				if (isp == 10) {
+					inventory.draw(egg_title, character_x + 852, character_y + 5);
+				}
+				if (isp == 11) {
+					inventory.draw(taco_title, character_x + 852, character_y + 5);
+				}
+				// hint = 0 temp
+				// hint = 1 use_success
+				// hint = 2 no_item
+				// hint = 3 hp/stamina full
+				inventory.draw(use, character_x + 852, character_y -240);
+				if(Gdx.input.isTouched()) {
+					if (click_x > 490 + 833 && click_x < 490 + 833 + 65) {
+						if (click_y - 490 > 233 && click_y - 490 < 272) {
+							float stamina_add = 240.1f;
+							float health_add = 4.9f;
+							if(!inventory_dased) {
+								inventory_dased = true;
+								if(Inventory.Food_Inv[isp] > 0 && (stamina_cur < stamina || health_cur < health) ) {
+									stamina_cur += stamina_add;
+									health_cur += health_add;
+									Inventory.Food_Inv[isp]--;
+									hint = 1;
+								}else if(Inventory.Food_Inv[isp] == 0){
+									hint = 2;
+									// owo
+									// aya
+								}else{
+									hint = 3;
+								}
+							}else if(inventory_das <= 0 && inventory_arr == 12){
+								inventory_arr--;
+								if (Inventory.Food_Inv[isp] > 0 && (stamina_cur < stamina || health_cur < health)) {
+									stamina_cur += stamina_add;
+									health_cur += health_add;
+									Inventory.Food_Inv[isp]--;
+									hint = 1;
+								} else if(Inventory.Food_Inv[isp] == 0){
+									hint = 2;
+									// owo
+									// aya
+								}else{
+									hint = 3;
+								}
+							}else if(inventory_das >= 0){
+								inventory_das--;
+							}else{
+								inventory_arr--;
+								if(inventory_arr == 0) {
+									inventory_arr = 12;
+								}
+							}
+						}else{
+							inventory_dased = false;
+							inventory_das = 48;
+							inventory_arr = 12;
+						}
+					}else{
+						inventory_dased = false;
+						inventory_das = 48;
+						inventory_arr = 12;
+					}
+				}
+				if(health_cur > health){
+					health_cur = health;
+				}
+				if(stamina_cur > stamina){
+					stamina_cur = stamina;
+				}
+				if(hint == 0) {
+					inventory.draw(inventory_temp, character_x + 852 + 65, character_y - 240);
+				}
+				if(hint == 1) {
+					inventory.draw(inventory_use_success, character_x + 852 + 65, character_y - 240);
+				}
+				if(hint == 2) {
+					inventory.draw(inventory_no_item, character_x + 852 + 65, character_y - 240);
+				}
+				if(hint == 3) {
+					inventory.draw(inventory_health_stamina_full, character_x + 852 + 65, character_y - 240);
+				}
 
 
 //			System.out.println(selected_item);
-			inventory.draw(inventory_selected, character_x + 338 + (isp % 5) * 102 - 1, character_y - 250 + 362 - 22 - (isp / 5) * 122 - 1);
+				inventory.draw(inventory_selected, character_x + 338 + (isp % 5) * 102 - 1, character_y - 250 + 362 - 22 - (isp / 5) * 122 - 1);
+			}
 		}
 
 		text_renderer.draw(batch_vignette, "98712634", 0, 0);
@@ -538,9 +643,9 @@ public class Game extends ApplicationAdapter {
 		batch_character.end();
 		enemies_batch.end();
 		batch_vignette.end();
+		death_screen.end();
 		health_bar.end();
 		stamina_bar.end();
-		death_screen.end();
 		inventory.end();
 
 	}
@@ -552,8 +657,8 @@ public class Game extends ApplicationAdapter {
 		img_character.dispose();
 		batch_vignette.dispose();
 		img_vignette.dispose();
-		health_bar.dispose();
 		stamina_bar.dispose();
+		health_bar.dispose();
 		death_screen.dispose();
 		inventory.dispose();
 		text_renderer.dispose();
