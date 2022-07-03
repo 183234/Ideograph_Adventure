@@ -82,6 +82,7 @@ public class Movement {
 
                 // collided!
                 collisions.add(new int[]{bx, by});
+                Game.collide.play();
 //                System.out.println("block: " + str(bx, by));
                 if(vy > 0 && intersect(last_y + CHAR, bb, u, bu) && !isBlock(bx, by - 1)) {
 //                    System.out.println("collided in upper face");

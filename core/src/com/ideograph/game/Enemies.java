@@ -2,6 +2,7 @@ package com.ideograph.game;
 
 import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,6 +20,7 @@ public class Enemies {
         private final Texture texture;
         private int speed;
         private int health;
+        private int initial_health;
         private boolean dead;
 
         public Enemy(JsonValue json) {
@@ -30,6 +32,7 @@ public class Enemies {
             String texture_path = json.get("texture").asString();
             this.texture = new Texture(texture_path);
             this.health = json.get("health").asInt();
+            this.initial_health = this.health;
             this.dead = false;
         }
 //
@@ -52,6 +55,19 @@ public class Enemies {
             return Math.min(this.x + ENEMY_WIDTH, x + width) > Math.max(this.x, x) &&
                     Math.min(this.y + ENEMY_WIDTH, y + width) > Math.max(this.y, y);
         }
+        public void resurrect(){
+
+            System.out.println("ayayaya");
+            System.out.println(this.x);
+            System.out.println(this.y);
+            if((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y) > 10000000 ){
+                this.health = this.initial_health;
+                this.dead = false;
+
+                System.out.println("ayayaya");
+            }
+        }
+
 
         public void dispose(){
             texture.dispose();
@@ -83,6 +99,8 @@ public class Enemies {
             if(!enemy.dead) {
                 enemy.move();
                 enemy.draw(batch);
+            }else{
+                enemy.resurrect();
             }
         }
     }
@@ -96,6 +114,7 @@ public class Enemies {
                 this.attack_cd = ATTACK_CD;
                 Game.health_cur -= 25;
                 attack_count++;
+                Game.hit.play();
 //                System.out.println("attacked! " + attack_count);
             }
         }
@@ -108,8 +127,12 @@ public class Enemies {
         for(Enemy enemy : this.enemies){
             for(Game.Attack atk : Game.attacks){
                 if(enemy.collided(atk.x, atk.y,  49) && this.be_attacked_cd == 0){
+                    // hit enemy owowowowowo
+
+
                     enemy.health = Math.max(0, enemy.health-atk.dmg);
                     this.be_attacked_cd = ATTACK_CD;
+                    Game.damage.play();
                 }
             }
             if(enemy.health == 0){

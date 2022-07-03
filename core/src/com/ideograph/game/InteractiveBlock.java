@@ -30,6 +30,7 @@ public class InteractiveBlock {
             rollreward();
             if(Game.chest_disappear) {
                 Game.tiledLayer.setCell(x, y, Game.tiledLayer.getCell(0, 0));
+                Game.chest_break.play();
             }
             System.out.println("interacted with chest");
             //set to interacted
