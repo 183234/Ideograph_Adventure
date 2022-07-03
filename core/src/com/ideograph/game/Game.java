@@ -613,6 +613,11 @@ public class Game extends ApplicationAdapter {
 			stamina_bar.draw(health_bar_outline, character_x + 331, character_y - 415);
 			text_renderer.draw(stamina_bar, ((int) stamina_cur) + "/" + ((int) stamina), character_x + 337, character_y - 398);
 			text_renderer.draw(stamina_bar, ((int) health_cur) + "/" + ((int) health), character_x + 337, character_y - 373);
+			text_renderer.draw3(stamina_bar, "Max Health:"+final_health, character_x + 337, character_y - 443);
+			text_renderer.draw3(stamina_bar, "Attack:"+final_atk, character_x + 637, character_y - 443);
+			text_renderer.draw3(stamina_bar, "Defense:"+final_def, character_x + 337, character_y - 488);
+			text_renderer.draw3(stamina_bar, "Max Stamina:"+final_stamina, character_x + 637, character_y - 488);
+
 		}
 		// inventory
 		if(!isDead && !inUpgrade) {
@@ -840,6 +845,8 @@ public class Game extends ApplicationAdapter {
 					inventory.draw(inventory_health_stamina_full, character_x + 852 + 64, character_y - 240);
 				}
 
+				text_renderer.draw2(inventory, "$" + (int)money, character_x + 950, character_y + 200);
+
 
 //			System.out.println(selected_item);
 				inventory.draw(inventory_selected, character_x + 338 + (isp % 5) * 102 - 1, character_y - 250 + 362 - 22 - (isp / 5) * 122 - 1);
@@ -877,14 +884,19 @@ public class Game extends ApplicationAdapter {
 				text_renderer.draw2(upgrade, "Level " + def_level + "    $" + get_money(def_level), character_x + 550, character_y - 100);
 				text_renderer.draw2(upgrade, "Level " + stamina_level + "    $" + get_money(stamina_level), character_x + 550, character_y - 200);
 
-				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-300);
-				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-200);
-				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-100);
-				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45);
+				if(money >= get_money(stamina_level)) {
+					upgrade.draw(upgrade_icon, character_x + 435 + 500, character_y + 45 - 300);
+				}
+				if(money >= get_money(def_level)) {
+					upgrade.draw(upgrade_icon, character_x + 435 + 500, character_y + 45 - 200);
+				}
+				if(money >= get_money(atk_level)) {
+					upgrade.draw(upgrade_icon, character_x + 435 + 500, character_y + 45 - 100);
+				}
+				if(money >= get_money(health_level)) {
+					upgrade.draw(upgrade_icon, character_x + 435 + 500, character_y + 45);
+				}
 
-				money = 4900000;
-				System.out.println(click_x);
-				System.out.println(click_y);
 				if(Gdx.input.isTouched()) {
 					if (click_x > 490 + 435 + 500 && click_x < 490 + 435 + 500 + 72) {
 						if (click_y > 490 + 45 - 144+15 && click_y < 490 + 45 - 72+30) {
@@ -1005,6 +1017,10 @@ public class Game extends ApplicationAdapter {
 							}
 						}
 					}
+				}else{
+					inventory_dased = false;
+					inventory_das = 48;
+					inventory_arr = 12;
 				}
 
 
@@ -1021,7 +1037,6 @@ public class Game extends ApplicationAdapter {
 //						System.out.println("owo");
 						}
 					}
-
 				}
 			}
 
