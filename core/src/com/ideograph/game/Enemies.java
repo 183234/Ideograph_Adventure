@@ -58,8 +58,7 @@ public class Enemies {
         public void resurrect(){
 
             System.out.println("ayayaya");
-            System.out.println(this.x);
-            System.out.println(this.y);
+            System.out.println((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y));
             if((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y) > 10000000 ){
                 this.health = this.initial_health;
                 this.dead = false;
@@ -126,7 +125,7 @@ public class Enemies {
         }
         for(Enemy enemy : this.enemies){
             for(Game.Attack atk : Game.attacks){
-                if(enemy.collided(atk.x, atk.y,  49) && this.be_attacked_cd == 0){
+                if(enemy.collided(atk.x, atk.y,  49) && this.be_attacked_cd == 0 && !enemy.dead){
                     // hit enemy owowowowowo
 
 
