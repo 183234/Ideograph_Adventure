@@ -146,6 +146,12 @@ public class Game extends ApplicationAdapter {
 	Sound menu_select;
 	Sound menu_back;
 	Sound death;
+	static Sound hit;
+	static Sound damage;
+	static Sound chest_break;
+	static Sound collide;
+	static Sound consume;
+	static Sound inv_select;
 	Sound level_start;
 	Sound chill_1;
 	Sound chill_2;
@@ -233,6 +239,12 @@ public class Game extends ApplicationAdapter {
 		level_start = Gdx.audio.newSound(Gdx.files.internal("Sounds/level_start.ogg"));
 		chill_1 = Gdx.audio.newSound(Gdx.files.internal("Sounds/chill_1.ogg"));
 		chill_2 = Gdx.audio.newSound(Gdx.files.internal("Sounds/chill_2.ogg"));
+		hit = Gdx.audio.newSound(Gdx.files.internal("Sounds/hit.ogg"));
+		damage = Gdx.audio.newSound(Gdx.files.internal("Sounds/damage.ogg"));
+		chest_break = Gdx.audio.newSound(Gdx.files.internal("Sounds/chest_break.ogg"));
+		collide = Gdx.audio.newSound(Gdx.files.internal("Sounds/collision.ogg"));
+		consume = Gdx.audio.newSound(Gdx.files.internal("Sounds/consume.ogg"));
+		inv_select = Gdx.audio.newSound(Gdx.files.internal("Sounds/inv_select.ogg"));
 
 		batch_character = new SpriteBatch();
 		img_character = new Texture("u6307(64x).png");
@@ -607,6 +619,7 @@ public class Game extends ApplicationAdapter {
 					if (click_y - (character_y - 112) % 102 < 90) {
 						if (0 < (click_y - (character_y - 112)) / 102 && (click_y - (character_y - 112)) / 102 < 5) {
 							selected_item = (int) ((click_y - (character_y - 112)) / 102 * 5 + (click_x - (character_x + 343)) / 102);
+							inv_select.play();
 						}
 					}
 				}
@@ -694,10 +707,9 @@ public class Game extends ApplicationAdapter {
 									health_cur += health_add;
 									Inventory.Food_Inv[isp]--;
 									hint = 1;
+									consume.play();
 								}else if(Inventory.Food_Inv[isp] == 0){
 									hint = 2;
-									// owo
-									// aya
 								}else{
 									hint = 3;
 								}
@@ -708,6 +720,7 @@ public class Game extends ApplicationAdapter {
 									health_cur += health_add;
 									Inventory.Food_Inv[isp]--;
 									hint = 1;
+									consume.play();
 								} else if(Inventory.Food_Inv[isp] == 0){
 									hint = 2;
 									// owo
@@ -773,9 +786,9 @@ public class Game extends ApplicationAdapter {
 		enemies.attack();
 		enemies.be_attacked();
 
-		System.out.println(character_x/72);
-		System.out.println(character_y/72);
-		System.out.println("ayaya");
+//		System.out.println(character_x/72);
+//		System.out.println(character_y/72);
+//		System.out.println("ayaya");
 
 
 
