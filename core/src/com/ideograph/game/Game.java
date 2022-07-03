@@ -78,6 +78,7 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_icon;
 	Texture inventory_UI;
 	Texture inventory_selected;
+
 	Texture cake_title;
 	Texture cookie_title;
 	Texture fries_title;
@@ -90,6 +91,21 @@ public class Game extends ApplicationAdapter {
 	Texture egg_title;
 	Texture sushi_title;
 	Texture taco_title;
+
+	Texture cake_description;
+	Texture cookie_description;
+	Texture fries_description;
+	Texture juice_description;
+	Texture meat_description;
+
+	Texture pineapple_description;
+	Texture pizza_description;
+	Texture ramen_description;
+	Texture spaghetti_description;
+	Texture egg_description;
+
+	Texture sushi_description;
+	Texture taco_description;
 
 	Texture use;
 	Texture inventory_no_item;
@@ -187,15 +203,30 @@ public class Game extends ApplicationAdapter {
 		fries_title = new Texture("fries_title.png");
 		juice_title = new Texture("juice_title.png");
 		meat_title = new Texture("meat_title.png");
-
 		pineapple_title = new Texture("pineapple_title.png");
 		pizza_title = new Texture("pizza_title.png");
 		ramen_title = new Texture("ramen_title.png");
 		spaghetti_title = new Texture("spaghetti_title.png");
 		egg_title = new Texture("egg_title.png");
-
 		sushi_title = new Texture("sushi_title.png");
 		taco_title = new Texture("taco_title.png");
+
+		cake_description = new Texture("cake_description.png");
+		cookie_description = new Texture("cookie_description.png");
+		fries_description = new Texture("fries_description.png");
+		juice_description = new Texture("juice_description.png");
+		meat_description = new Texture("meat_description.png");
+
+		pineapple_description = new Texture("pineapple_description.png");
+		pizza_description = new Texture("pizza_description.png");
+		ramen_description = new Texture("ramen_description.png");
+		spaghetti_description = new Texture("spaghetti_description.png");
+		egg_description = new Texture("egg_description.png");
+
+		sushi_description = new Texture("sushi_description.png");
+		taco_description = new Texture("taco_description.png");
+
+
 
 		use = new Texture("use.png");
 		inventory_use_success = new Texture("inventory_use_success.png");
@@ -227,9 +258,9 @@ public class Game extends ApplicationAdapter {
 		6  / pineapple 	      / 從鳳梨披薩拔下來的鳳梨
 		7  / pizza            / 拔掉鳳梨的披薩
 		8  / ramen 		  	  / 抽槳用拉麵
-		9  / sunnyside_up_egg / 一顆蛋 似乎跟端午節立的但是同一顆
+		9  / sunnyside_up_egg / 一顆蛋 似乎跟端午節立的蛋是同一顆
 		10 / spaghetti 		  / 原本在冷凍包裝中的義大利麵
-		11 / taco             / taco
+		11 / taco             / 一個taco
 		 */
 
 		this.sushi = new Food("sushi", "好吃的壽司");
@@ -487,7 +518,7 @@ public class Game extends ApplicationAdapter {
 						tmp = (int) (tmp / 10);
 						digit++;
 					}
-					text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 33 + (i % 5) * 102 - digit * 2, character_y - 250 + 362 - 7 - (int) (i / 5) * 122);
+					text_renderer.draw(inventory, Integer.toString(Inventory.Food_Inv[i]), character_x + 300 + 43 + 33 + (i % 5) * 102 - digit, character_y - 250 + 362 - 7 - (int) (i / 5) * 122);
 				}
 				if (click_x - (character_x + 343) % 102 < 90) {
 //				if(0 < (click_x-(character_x+343)) / 102 && (click_x-(character_x+343))/102 < 5 ){
@@ -516,41 +547,53 @@ public class Game extends ApplicationAdapter {
 
 				if (isp == 0) {
 					inventory.draw(sushi_title, character_x + 852, character_y + 5);
+					inventory.draw(sushi_description, character_x + 852, character_y -200);
 				}
 				if (isp == 1) {
 					inventory.draw(cake_title, character_x + 851, character_y + 5);
+					inventory.draw(cake_description, character_x + 852, character_y -200);
 				}
 				if (isp == 2) {
 					inventory.draw(cookie_title, character_x + 852, character_y + 5);
+					inventory.draw(cookie_description, character_x + 852, character_y -200);
 				}
 				if (isp == 3) {
 					inventory.draw(fries_title, character_x + 852, character_y + 5);
+					inventory.draw(fries_description, character_x + 852, character_y -200);
 				}
 				if (isp == 4) {
 					inventory.draw(juice_title, character_x + 852, character_y + 5);
+					inventory.draw(juice_description, character_x + 852, character_y -200);
 				}
 
 				if (isp == 5) {
 					inventory.draw(meat_title, character_x + 852, character_y + 5);
+					inventory.draw(meat_description, character_x + 852, character_y -200);
 				}
 				if (isp == 6) {
 					inventory.draw(pineapple_title, character_x + 852, character_y + 5);
+					inventory.draw(pineapple_description, character_x + 852, character_y -200);
 				}
 				if (isp == 7) {
 					inventory.draw(pizza_title, character_x + 852, character_y + 5);
+					inventory.draw(pizza_description, character_x + 852, character_y -200);
 				}
 				if (isp == 8) {
 					inventory.draw(ramen_title, character_x + 852, character_y + 5);
+					inventory.draw(ramen_description, character_x + 852, character_y -200);
 				}
 				if (isp == 9) {
 					inventory.draw(spaghetti_title, character_x + 852, character_y + 5);
+					inventory.draw(spaghetti_description, character_x + 852, character_y -200);
 				}
 
 				if (isp == 10) {
 					inventory.draw(egg_title, character_x + 852, character_y + 5);
+					inventory.draw(egg_description, character_x + 852, character_y -200);
 				}
 				if (isp == 11) {
 					inventory.draw(taco_title, character_x + 852, character_y + 5);
+					inventory.draw(taco_description, character_x + 852, character_y -200);
 				}
 				// hint = 0 temp
 				// hint = 1 use_success
@@ -616,16 +659,16 @@ public class Game extends ApplicationAdapter {
 					stamina_cur = stamina;
 				}
 				if(hint == 0) {
-					inventory.draw(inventory_temp, character_x + 852 + 65, character_y - 240);
+					inventory.draw(inventory_temp, character_x + 852 + 64, character_y - 240);
 				}
 				if(hint == 1) {
-					inventory.draw(inventory_use_success, character_x + 852 + 65, character_y - 240);
+					inventory.draw(inventory_use_success, character_x + 852 + 64, character_y - 240);
 				}
 				if(hint == 2) {
-					inventory.draw(inventory_no_item, character_x + 852 + 65, character_y - 240);
+					inventory.draw(inventory_no_item, character_x + 852 + 64, character_y - 240);
 				}
 				if(hint == 3) {
-					inventory.draw(inventory_health_stamina_full, character_x + 852 + 65, character_y - 240);
+					inventory.draw(inventory_health_stamina_full, character_x + 852 + 64, character_y - 240);
 				}
 
 
