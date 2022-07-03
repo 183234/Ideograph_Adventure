@@ -128,7 +128,7 @@ public class Movement {
             status = Status.ground;
         }
         if ((status & Status.ground) != 0) soft_jump_grace_period = 4;
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Game.stamina_cur > 0) {
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && Game.stamina_cur > 0) {
             speed_factor = 2;
         }else speed_factor = 1;
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {Game.character_delta_x -= 1 * speed_factor; Game.stamina_cur -= (speed_factor-1);}
@@ -142,7 +142,7 @@ public class Movement {
         }
 
         // wall kick
-        if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && (status & Status.ground) == 0 && kick_cd <= 0){
+        if(Gdx.input.isKeyPressed(Input.Keys.W) && (status & Status.ground) == 0 && kick_cd <= 0){
             boolean kicked = false;
             if ((status & Status.wall_left) != 0 && last_kick != Status.wall_left) {
 //                System.out.println("wall kicked: LEfT");
