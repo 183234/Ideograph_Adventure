@@ -33,6 +33,33 @@ public class Game extends ApplicationAdapter {
 
 	SpriteBatch batch_character; // ideograph_advantage
 	Texture img_character;   // img of ideograph_advantage
+
+	// skills
+	static int health_level = 0;
+	static int atk_level = 0;
+	static int def_level = 0;
+	static int stamina_level = 0;
+
+	public int get_final_health(int level){
+		return (int) (49 + 4.9 * level);
+	}
+	public int get_final_atk(int level){
+		return level+5;
+	}
+	public int get_final_def(int level){
+		return level+5;
+	}
+	public int get_final_stamina(int level){
+		return (int) (490 + 49 * level);
+	}
+
+
+	static int final_atk = 5 + atk_level;
+	static int final_def = 5 + def_level;
+	static int final_health = (int) (49 + 4.9 * health_level);
+	static int final_stamina = (int) (490 + 49 * stamina_level);
+
+
 	static float character_x = 490;
 	static float character_y = 490;
 	static float character_delta_x = 0;
@@ -47,11 +74,13 @@ public class Game extends ApplicationAdapter {
 	public int death_screen_delay = 100;
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
+	public boolean inUpgrade = false;
 	public int selected_item = 0;
 	static boolean chest_disappear = true;
 	static int level = 0;
 	static boolean next_level = false;
 	static MapLoader maploader = new MapLoader();
+	boolean upgrade_initialized = false;
 	boolean inventory_initialized = false;
 	ArrayList<int[]> collsions = new ArrayList<>();
 	SpriteBatch batch_vignette;
@@ -60,7 +89,8 @@ public class Game extends ApplicationAdapter {
 	SpriteBatch stamina_bar;
 	static TiledMapTileLayer tiledLayer;
 	Texture health_bar_bg;
-	TextRenderer text_renderer;
+	TextRenderer text_renderer; // 16
+
 
 	//level_tutorial level = new level_tutorial();
 	Texture health_bar_color;
@@ -79,6 +109,14 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_icon;
 	Texture inventory_UI;
 	Texture inventory_selected;
+
+	SpriteBatch upgrade;
+	Texture upgrade_icon;
+	Texture upgrade_UI;
+	Texture attack_icon;
+	Texture defense_icon;
+	Texture health_icon;
+	Texture stamina_icon;
 
 	Texture cake_title;
 	Texture cookie_title;
@@ -117,8 +155,8 @@ public class Game extends ApplicationAdapter {
 
 	float map_delta_x = 0;
 	float map_delta_y = 0;
-	float health = 49;
-	float stamina = 4900;
+	float health = final_health;
+	float stamina = final_stamina;
 	boolean jump = true;
 	int wall_jump = 0;
 	static int click_x = 0;
@@ -128,6 +166,9 @@ public class Game extends ApplicationAdapter {
 	boolean inventory_dased = false;
 	int inventory_arr = 12;
 	int hint = 0;
+	static int money = 0;
+
+
 
 	// foods :yum:
 
@@ -179,13 +220,13 @@ public class Game extends ApplicationAdapter {
 		int dmg;
 		boolean dead;
 
-		public Attack(float owo, float owowo, float aya, float ayaya){
+		public Attack(float owo, float owowo, float aya, float ayaya, int dmg){
 			this.x = owo;//character_x;
 			this.y = owowo; //character_y;
 			this.dx = aya; //(float) (click_x/Math.sqrt(click_x*click_x+click_y*click_y+1)) * 5;
 			this.dy = ayaya; //(float) (click_y/Math.sqrt(click_x*click_x+click_y*click_y+1)) * 5;
 			this.dead = false;
-			this.dmg = 5;
+			this.dmg = dmg;
 		}
 
 		public void move(){
@@ -225,7 +266,7 @@ public class Game extends ApplicationAdapter {
 			attack_cd--;
 		}else if (clicked){
 			attack_cd = 37;
-			attacks.add(new Attack(character_x, character_y, (float) ( (click_x-490)/Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, (float) ( (click_y-490) /Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15));
+			attacks.add(new Attack(character_x, character_y, (float) ( (click_x-490)/Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, (float) ( (click_y-490) /Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, final_atk));
 		}
 	}
 
@@ -278,6 +319,15 @@ public class Game extends ApplicationAdapter {
 		inventory_icon = new Texture("inventory_icon.png");
 		inventory_UI = new Texture("inventory_test.png");
 		inventory_selected = new Texture("inventory_selected.png");
+
+		// upgrade skills
+		upgrade = new SpriteBatch();
+		upgrade_icon = new Texture("upgrade_icon.png");
+		upgrade_UI = new Texture("upgrade_UI.png");
+		attack_icon = new Texture("attack_icon.png");
+		defense_icon = new Texture("defense_icon.png");
+		health_icon = new Texture("health_icon.png");
+		stamina_icon = new Texture("stamina_icon.png");
 
 		//item titles
 		cake_title = new Texture("cake_title.png");
@@ -407,6 +457,11 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
+
+	public int get_money(int level) {
+		return (int) Math.pow(1.3, level) * 2;
+	}
+
 	public void death() {
 		if(!death_sound_played) {
 			death.play();
@@ -416,7 +471,7 @@ public class Game extends ApplicationAdapter {
 		character_y = 490;
 		character_delta_x = 0;
 		character_delta_y = 0;
-
+		attacks.clear();
 	}
 
 	public void inventory_processing() {
@@ -431,6 +486,23 @@ public class Game extends ApplicationAdapter {
 			if (Gdx.input.getX() > 1154 - 36 && Gdx.input.getX() < 1154 + 36) {
 				if (Gdx.input.getY() > 952 - 36 && Gdx.input.getY() < 952 + 36) {
 					inInventory = true;
+				}
+			}
+		}
+	}
+
+	public void upgrade_processing() {
+		//43, 56 (bottom left)
+		//43, 362(upper left)
+		if (!upgrade_initialized) {
+			upgrade_initialized = true;
+
+		}
+		//selection input
+		if (Gdx.input.isTouched()) {
+			if (Gdx.input.getX() > 1154 - 36 + 90 && Gdx.input.getX() < 1154 + 36 + 90) {
+				if (Gdx.input.getY() > 952 - 36 && Gdx.input.getY() < 952 + 36) {
+					inUpgrade = true;
 				}
 			}
 		}
@@ -457,8 +529,10 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.begin();
 		death_screen.begin();
 		inventory.begin();
+		upgrade.begin();
 		enemies_batch.begin();
 		attack_batch.begin();
+
 
 		if (next_level) {
 			chill_1.stop();
@@ -541,7 +615,7 @@ public class Game extends ApplicationAdapter {
 			text_renderer.draw(stamina_bar, ((int) health_cur) + "/" + ((int) health), character_x + 337, character_y - 373);
 		}
 		// inventory
-		if(!isDead) {
+		if(!isDead && !inUpgrade) {
 			if (!inInventory) {
 				inventory.draw(inventory_icon, character_x + 630, character_y - 420);
 				if (Gdx.input.isTouched()) {
@@ -772,10 +846,196 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
-		if(Gdx.input.isTouched()) {
-			attack(true);
-		}else{
-			attack(false);
+		//upgrade
+
+		if(!isDead && !inInventory){
+			if (!inUpgrade) {
+				upgrade.draw(upgrade_icon, character_x + 630 + 90, character_y - 420);
+				if (Gdx.input.isTouched()) {
+					// 1154 952 center
+					// 1136 905 new center
+//				System.out.println("x = " + Gdx.input.getX());
+//				System.out.println("y = " + Gdx.input.getY());
+					if (click_x > 1136 + 90 - 36 && click_x < 1136 + 90+ 36 &&
+							click_y > 905 - 36 && click_y < 905 + 36) {
+						menu_select.play();
+						inUpgrade = true;
+						hint = 0;
+//					next_level = true;
+					}
+				}
+			} else {
+				upgrade_processing();
+				upgrade.draw(upgrade_UI, character_x + 300, character_y - 334);
+				upgrade.draw(health_icon, character_x + 435, character_y+45);
+				upgrade.draw(attack_icon, character_x + 435, character_y+45-100);
+				upgrade.draw(defense_icon, character_x + 435, character_y+45-200);
+				upgrade.draw(stamina_icon, character_x + 435, character_y+45-300);
+				text_renderer.draw2(upgrade, "$" + (int)money, character_x + 550, character_y + 200);
+				text_renderer.draw2(upgrade, "Level " + health_level + "    $" + get_money(health_level), character_x + 550, character_y + 100);
+				text_renderer.draw2(upgrade, "Level " + atk_level + "    $" + get_money(atk_level), character_x + 550, character_y );
+				text_renderer.draw2(upgrade, "Level " + def_level + "    $" + get_money(def_level), character_x + 550, character_y - 100);
+				text_renderer.draw2(upgrade, "Level " + stamina_level + "    $" + get_money(stamina_level), character_x + 550, character_y - 200);
+
+				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-300);
+				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-200);
+				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45-100);
+				upgrade.draw(upgrade_icon, character_x + 435+500, character_y+45);
+
+				money = 4900000;
+				System.out.println(click_x);
+				System.out.println(click_y);
+				if(Gdx.input.isTouched()) {
+					if (click_x > 490 + 435 + 500 && click_x < 490 + 435 + 500 + 72) {
+						if (click_y > 490 + 45 - 144+15 && click_y < 490 + 45 - 72+30) {
+							if(!inventory_dased) {
+								inventory_dased = true;
+								if (money >= get_money(health_level)) {
+									money -= get_money(health_level);
+									health_level++;
+									float tmp = health-health_cur;
+									final_health = get_final_health(health_level);
+									health = final_health;
+									health_cur = health-tmp;
+								}
+							}else if(inventory_das <= 0 && inventory_arr == 12){
+								inventory_arr--;
+								if (money >= get_money(health_level)) {
+									money -= get_money(health_level);
+									health_level++;
+									float tmp = health-health_cur;
+									final_health = get_final_health(health_level);
+									health = final_health;
+									health_cur = health-tmp;
+								}
+							}else if(inventory_das >= 0){
+								inventory_das--;
+							}else{
+								inventory_arr--;
+								if(inventory_arr == 0) {
+									inventory_arr = 12;
+								}
+							}
+						}
+					}
+
+					if (click_x > 490 + 435 + 500 && click_x < 490 + 435 + 500 + 72) {
+						if (click_y > 490 + 45 - 144+15 + 100 && click_y < 490 + 45 - 72+30 + 100) {
+							if(!inventory_dased) {
+								inventory_dased = true;
+								if (money >= get_money(atk_level)) {
+									money -= get_money(atk_level);
+									atk_level++;
+									final_atk = get_final_atk(atk_level);
+								}
+							}else if(inventory_das <= 0 && inventory_arr == 12){
+								inventory_arr--;
+								if (money >= get_money(atk_level)) {
+									money -= get_money(atk_level);
+									atk_level++;
+									final_atk = get_final_atk(atk_level);
+								}
+							}else if(inventory_das >= 0){
+								inventory_das--;
+							}else{
+								inventory_arr--;
+								if(inventory_arr == 0) {
+									inventory_arr = 12;
+								}
+							}
+						}
+					}
+
+					if (click_x > 490 + 435 + 500 && click_x < 490 + 435 + 500 + 72) {
+						if (click_y > 490 + 45 - 144+15+200 && click_y < 490 + 45 - 72+30+200) {
+							if(!inventory_dased) {
+								inventory_dased = true;
+								if (money >= get_money(def_level)) {
+									money -= get_money(def_level);
+									def_level++;
+									final_def = get_final_def(def_level);
+								}
+							}else if(inventory_das <= 0 && inventory_arr == 12){
+								inventory_arr--;
+								if (money >= get_money(def_level)) {
+									money -= get_money(def_level);
+									def_level++;
+									final_def = get_final_def(def_level);
+								}
+							}else if(inventory_das >= 0){
+								inventory_das--;
+							}else{
+								inventory_arr--;
+								if(inventory_arr == 0) {
+									inventory_arr = 12;
+								}
+							}
+						}
+					}
+
+					if (click_x > 490 + 435 + 500 && click_x < 490 + 435 + 500 + 72) {
+						if (click_y > 490 + 45 - 144+15+300 && click_y < 490 + 45 - 72+30+300) {
+							if(!inventory_dased) {
+								inventory_dased = true;
+								if (money >= get_money(stamina_level)) {
+									money -= get_money(stamina_level);
+									stamina_level++;
+									float tmp = stamina-stamina_cur;
+									final_stamina = get_final_stamina(stamina_level);
+									stamina = final_stamina;
+									stamina_cur = stamina - tmp;
+								}
+							}else if(inventory_das <= 0 && inventory_arr == 12){
+								inventory_arr--;
+								if (money >= get_money(stamina_level)) {
+									money -= get_money(stamina_level);
+									stamina_level++;
+									float tmp = stamina-stamina_cur;
+									final_stamina = get_final_stamina(stamina_level);
+									stamina = final_stamina;
+									stamina_cur = stamina - tmp;
+								}
+							}else if(inventory_das >= 0){
+								inventory_das--;
+							}else{
+								inventory_arr--;
+								if(inventory_arr == 0) {
+									inventory_arr = 12;
+								}
+							}
+						}
+					}
+				}
+
+
+
+				if (Gdx.input.isTouched()) {
+//				System.out.println("x = " + Gdx.input.getX());
+//				System.out.println("y = " + Gdx.input.getY());
+					// 1704 334 center
+					// 1685 286 new center
+					if (Gdx.input.getX() > 1685 - 17 && Gdx.input.getX() < 1685 + 17) {
+						if (Gdx.input.getY() > 286 - 17 && Gdx.input.getY() < 286 + 17) {
+							menu_back.play();
+							inUpgrade = false;
+//						System.out.println("owo");
+						}
+					}
+
+				}
+			}
+
+		}
+
+
+
+
+		if(!isDead) {
+			if (Gdx.input.isTouched()) {
+				attack(true);
+			} else {
+				attack(false);
+			}
 		}
 
 		for(Attack attackkk : this.attacks){
@@ -804,6 +1064,7 @@ public class Game extends ApplicationAdapter {
 		health_bar.end();
 		stamina_bar.end();
 		inventory.end();
+		upgrade.end();
 		attack_batch.end();
 	}
 
@@ -819,6 +1080,7 @@ public class Game extends ApplicationAdapter {
 		death_screen.dispose();
 		attack_batch.dispose();
 		inventory.dispose();
+		upgrade.dispose();
 		text_renderer.dispose();
 		level_start.dispose();
 		menu_select.dispose();

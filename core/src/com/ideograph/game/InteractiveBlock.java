@@ -29,7 +29,7 @@ public class InteractiveBlock {
         if (cellId == 3) {
             rollreward();
             if(Game.chest_disappear) {
-                Game.tiledLayer.setCell(x, y, Game.tiledLayer.getCell(0, 0));
+                Game.tiledLayer.setCell(x, y, null);
                 Game.chest_break.play();
             }
             System.out.println("interacted with chest");
