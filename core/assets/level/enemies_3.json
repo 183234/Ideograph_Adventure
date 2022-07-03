@@ -5,6 +5,66 @@
     "bound_left": 1,
     "bound_right": 1,
     "speed": 0,
-    "texture": "ideograph_advantage(72x).png"
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },
+  {
+    "x": 2,
+    "y": 7,
+    "bound_left": 2,
+    "bound_right": 18,
+    "speed": 7,
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },{
+  "x": 2,
+  "y": 7,
+  "bound_left": 2,
+  "bound_right": 18,
+  "speed": 13,
+  "texture": "friend_request(72x).png",
+  "health": 20
+},
+  {
+    "x": 2,
+    "y": 7,
+    "bound_left": 2,
+    "bound_right": 18,
+    "speed": 7,
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },{
+  "x": 2,
+  "y": 12,
+  "bound_left": 2,
+  "bound_right": 18,
+  "speed": 8,
+  "texture": "friend_request(72x).png",
+  "health": 20
+},{
+  "x": 2,
+  "y": 12,
+  "bound_left": 2,
+  "bound_right": 18,
+  "speed": 11,
+  "texture": "friend_request(72x).png",
+  "health": 20
+},{
+  "x": 2,
+  "y": 17,
+  "bound_left": 2,
+  "bound_right": 18,
+  "speed": 9,
+  "texture": "friend_request(72x).png",
+  "health": 20
+},
+  {
+    "x": 2,
+    "y": 17,
+    "bound_left": 2,
+    "bound_right": 18,
+    "speed": 10,
+    "texture": "friend_request(72x).png",
+    "health": 20
   }
 ]

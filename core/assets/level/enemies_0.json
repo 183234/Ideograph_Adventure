@@ -1,10 +1,38 @@
 [
   {
+    "x": 47,
+    "y": 5,
+    "bound_left": 47,
+    "bound_right": 77,
+    "speed": 18,
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },
+  {
     "x": 1,
-    "y": 1,
+    "y": 3,
     "bound_left": 1,
-    "bound_right": 5,
-    "speed": 3,
-    "texture": "ideograph_advantage(72x).png"
+    "bound_right": 24,
+    "speed": 24,
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },
+  {
+    "x": 50,
+    "y": 6,
+    "bound_left": 49,
+    "bound_right": 77,
+    "speed": 21,
+    "texture": "friend_request(72x).png",
+    "health": 20
+  },
+  {
+    "x": 99,
+    "y": 12,
+    "bound_left": 97,
+    "bound_right": 117,
+    "speed": 21,
+    "texture": "friend_request(72x).png",
+    "health": 20
   }
 ]

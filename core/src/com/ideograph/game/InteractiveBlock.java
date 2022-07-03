@@ -28,6 +28,9 @@ public class InteractiveBlock {
         int cellId = cell.getTile().getId();
         if (cellId == 3) {
             rollreward();
+            if(Game.chest_disappear) {
+                Game.tiledLayer.setCell(x, y, Game.tiledLayer.getCell(0, 0));
+            }
             System.out.println("interacted with chest");
             //set to interacted
         } else if (cellId == 4) {

@@ -48,6 +48,7 @@ public class Game extends ApplicationAdapter {
 	public int death_screen_opacity = 0;
 	public boolean inInventory = false;
 	public int selected_item = 0;
+	static boolean chest_disappear = true;
 	static int level = 0;
 	static boolean next_level = false;
 	static MapLoader maploader = new MapLoader();
@@ -112,21 +113,24 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_health_stamina_full;
 	Texture inventory_use_success;
 	Texture inventory_temp;
+	Texture attack_texture;
 
 	float map_delta_x = 0;
 	float map_delta_y = 0;
-	float health = 100;
+	float health = 49;
 	float stamina = 4900;
 	boolean jump = true;
 	int wall_jump = 0;
-	int click_x = 0;
-	int click_y = 0;
+	static int click_x = 0;
+	static int click_y = 0;
 	int isp = 0; // inventory selected position
 	int inventory_das = 48;
 	boolean inventory_dased = false;
 	int inventory_arr = 12;
 	int hint = 0;
+
 	// foods :yum:
+
 	Food sushi;
 	Food cake;
 	Food cookie;
@@ -153,6 +157,72 @@ public class Game extends ApplicationAdapter {
 
 	SpriteBatch enemies_batch;
 	Enemies enemies;
+
+	SpriteBatch attack_batch;
+
+
+
+	static ArrayList<Attack> attacks;
+
+	int attack_cd = 20;
+	int attack_dx, attack_dy;
+
+	static class Attack{
+		float x, y;
+		float dx, dy;
+		int dmg;
+		boolean dead;
+
+		public Attack(float owo, float owowo, float aya, float ayaya){
+			this.x = owo;//character_x;
+			this.y = owowo; //character_y;
+			this.dx = aya; //(float) (click_x/Math.sqrt(click_x*click_x+click_y*click_y+1)) * 5;
+			this.dy = ayaya; //(float) (click_y/Math.sqrt(click_x*click_x+click_y*click_y+1)) * 5;
+			this.dead = false;
+			this.dmg = 5;
+		}
+
+		public void move(){
+			x += dx;
+			y -= dy;
+			if(tiledLayer.getCell((int) (this.x/72), (int) (this.y/72)) != null){
+				this.dead = true;
+			}
+			if(tiledLayer.getCell((int) ((this.x+49)/72), (int) (this.y/72)) != null){
+				this.dead = true;
+			}
+			if(tiledLayer.getCell((int) (this.x/72), (int) ((this.y+49)/72)) != null){
+				this.dead = true;
+			}
+			if(tiledLayer.getCell((int)((this.x+49)/72), (int) ((this.y+49)/72)) != null){
+				this.dead = true;
+			}
+		}
+
+		public void render(){
+			move();
+		}
+	}
+
+	public void attack(boolean clicked){
+		ArrayList<Attack> remove = new ArrayList<Attack>();
+		for(Attack attackkk : this.attacks){
+			attackkk.render();
+			if(attackkk.dead){
+				remove.add(attackkk);
+			}
+		}
+		for(Attack atk : remove) {
+			this.attacks.remove(atk);
+		}
+		if(attack_cd > 0){
+			attack_cd--;
+		}else if (clicked){
+			attack_cd = 37;
+			attacks.add(new Attack(character_x, character_y, (float) ( (click_x-490)/Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, (float) ( (click_y-490) /Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15));
+		}
+	}
+
 
 
 	@Override
@@ -234,6 +304,10 @@ public class Game extends ApplicationAdapter {
 		inventory_no_item = new Texture("inventory_no_item.png");
 		inventory_temp = new Texture("inventory_temp.png");
 
+		attack_texture = new Texture("attack.png");
+		attacks = new ArrayList<Attack>();
+		attack_batch = new SpriteBatch();
+
 		//maploader(?
 		maploader.loadmap(level);
 
@@ -278,7 +352,7 @@ public class Game extends ApplicationAdapter {
 
 		text_renderer = TextRenderer.getInstance();
 		enemies_batch = new SpriteBatch();
-		enemies = Enemies.getEnemies(1);
+		enemies = Enemies.getEnemies(0);
 	}
 
 	public void renderBackground() {
@@ -358,6 +432,11 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
+
+
+
+
+
 	@Override
 	public void render() {
 		batch_character.begin();
@@ -367,6 +446,7 @@ public class Game extends ApplicationAdapter {
 		death_screen.begin();
 		inventory.begin();
 		enemies_batch.begin();
+		attack_batch.begin();
 
 		if (next_level) {
 			chill_2.stop();
@@ -381,6 +461,8 @@ public class Game extends ApplicationAdapter {
 			next_level = false;
 			level_start.play(0.5f);
 			chill_2.loop(0.1f);
+			enemies.dispose();
+			enemies = Enemies.getEnemies(level);
 		}
 
 		if (Gdx.input.isTouched()) {
@@ -603,8 +685,8 @@ public class Game extends ApplicationAdapter {
 				if(Gdx.input.isTouched()) {
 					if (click_x > 490 + 833 && click_x < 490 + 833 + 65) {
 						if (click_y - 490 > 233 && click_y - 490 < 272) {
-							float stamina_add = 240.1f;
-							float health_add = 4.9f;
+							float stamina_add = 490f;
+							float health_add = 49f;
 							if(!inventory_dased) {
 								inventory_dased = true;
 								if(Inventory.Food_Inv[isp] > 0 && (stamina_cur < stamina || health_cur < health) ) {
@@ -677,9 +759,28 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
-		text_renderer.draw(batch_vignette, "98712634", 0, 0);
+		if(Gdx.input.isTouched()) {
+			attack(true);
+		}else{
+			attack(false);
+		}
+
+		for(Attack attackkk : this.attacks){
+			attack_batch.draw(attack_texture, (int)attackkk.x, (int)attackkk.y);
+		}
+
 		enemies.render(enemies_batch);
 		enemies.attack();
+		enemies.be_attacked();
+
+		System.out.println(character_x/72);
+		System.out.println(character_y/72);
+		System.out.println("ayaya");
+
+
+
+
+		//tiledLayer.setCell();
 
 //		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
 
@@ -690,7 +791,7 @@ public class Game extends ApplicationAdapter {
 		health_bar.end();
 		stamina_bar.end();
 		inventory.end();
-
+		attack_batch.end();
 	}
 
 
@@ -703,12 +804,14 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.dispose();
 		health_bar.dispose();
 		death_screen.dispose();
+		attack_batch.dispose();
 		inventory.dispose();
 		text_renderer.dispose();
 		level_start.dispose();
 		menu_select.dispose();
 		menu_back.dispose();
 		death.dispose();
+
 	}
 }
 
