@@ -150,7 +150,7 @@ public class Game extends ApplicationAdapter {
 	Sound chill_1;
 	Sound chill_2;
 	//tiled map stuff
-	OrthographicCamera camera;
+	public static OrthographicCamera camera;
 	TiledMapRenderer tiledMapRenderer;
 	Weapon owo = new Weapon();
 	Weapon uwu = new Weapon();
@@ -449,7 +449,7 @@ public class Game extends ApplicationAdapter {
 		attack_batch.begin();
 
 		if (next_level) {
-			chill_2.stop();
+			chill_1.stop();
 			level++;
 			maploader.loadmap(level);
 			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
