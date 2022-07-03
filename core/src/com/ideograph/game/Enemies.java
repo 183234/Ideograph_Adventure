@@ -15,9 +15,11 @@ public class Enemies {
 
     static class Enemy {
         private int x, y;
-        private int bound_l, bound_r;
-        private Texture texture;
+        private final int bound_l, bound_r;
+        private final Texture texture;
         private int speed;
+        private int health;
+        private boolean dead;
 
         public Enemy(JsonValue json) {
             this.x = json.get("x").asInt() * Game.BLOCK_WIDTH;
@@ -27,7 +29,13 @@ public class Enemies {
             this.bound_r = json.get("bound_right").asInt() * Game.BLOCK_WIDTH;
             String texture_path = json.get("texture").asString();
             this.texture = new Texture(texture_path);
+            this.health = json.get("health").asInt();
+            this.dead = false;
         }
+//
+//        public Enemy(int x, int y, int bound_l, int bound_r, String texture) {
+//
+//        }
 
         public void move() {
             if(this.x + speed < this.bound_l || this.x + speed > this.bound_r){
@@ -41,13 +49,18 @@ public class Enemies {
         }
 
         public boolean collided(float x, float y, float width){
-            return Math.min(this.x + ENEMY_WIDTH, x + width) >= Math.max(this.x, x) &&
-                    Math.min(this.y + ENEMY_WIDTH, y + width) >= Math.max(this.y, y);
+            return Math.min(this.x + ENEMY_WIDTH, x + width) > Math.max(this.x, x) &&
+                    Math.min(this.y + ENEMY_WIDTH, y + width) > Math.max(this.y, y);
+        }
+
+        public void dispose(){
+            texture.dispose();
         }
     }
 
     ArrayList<Enemy> enemies;
     int attack_cd;
+    int be_attacked_cd;
     int attack_count;
 
     private Enemies(){
@@ -67,8 +80,10 @@ public class Enemies {
 
     public void render(SpriteBatch batch){
         for(Enemy enemy : this.enemies) {
-            enemy.move();
-            enemy.draw(batch);
+            if(!enemy.dead) {
+                enemy.move();
+                enemy.draw(batch);
+            }
         }
     }
 
@@ -77,12 +92,35 @@ public class Enemies {
             this.attack_cd--;
         }
         for(Enemy enemy : this.enemies){
-            if(enemy.collided(Game.character_x, Game.character_y, Game.CHAR_WIDTH) && this.attack_cd == 0) {
+            if(enemy.collided(Game.character_x, Game.character_y, Game.CHAR_WIDTH) && this.attack_cd == 0 && !enemy.dead) {
                 this.attack_cd = ATTACK_CD;
                 Game.health_cur -= 25;
                 attack_count++;
 //                System.out.println("attacked! " + attack_count);
             }
+        }
+    }
+
+    public void be_attacked() {
+        if(this.be_attacked_cd > 0){
+            this.be_attacked_cd--;
+        }
+        for(Enemy enemy : this.enemies){
+            for(Game.Attack atk : Game.attacks){
+                if(enemy.collided(atk.x, atk.y,  49) && this.be_attacked_cd == 0){
+                    enemy.health = Math.max(0, enemy.health-atk.dmg);
+                    this.be_attacked_cd = ATTACK_CD;
+                }
+            }
+            if(enemy.health == 0){
+                enemy.dead = true;
+            }
+        }
+    }
+
+    public void dispose() {
+        for(Enemy enemy : this.enemies) {
+            enemy.dispose();
         }
     }
 }
