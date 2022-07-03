@@ -111,7 +111,7 @@ public class Enemies {
         for(Enemy enemy : this.enemies){
             if(enemy.collided(Game.character_x, Game.character_y, Game.CHAR_WIDTH) && this.attack_cd == 0 && !enemy.dead) {
                 this.attack_cd = ATTACK_CD;
-                Game.health_cur -= 25;
+                Game.health_cur -= 30 * (10f / (10 + Game.final_def));
                 attack_count++;
                 Game.hit.play();
 //                System.out.println("attacked! " + attack_count);
@@ -134,8 +134,9 @@ public class Enemies {
                     Game.damage.play();
                 }
             }
-            if(enemy.health == 0){
+            if(enemy.health == 0 && !enemy.dead){
                 enemy.dead = true;
+                Game.money += enemy.initial_health;
             }
         }
     }
