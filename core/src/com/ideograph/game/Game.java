@@ -266,7 +266,9 @@ public class Game extends ApplicationAdapter {
 			attack_cd--;
 		}else if (clicked){
 			attack_cd = 37;
-			attacks.add(new Attack(character_x, character_y, (float) ( (click_x-490)/Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, (float) ( (click_y-490) /Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15, final_atk));
+			float fixed_dx = (float) ((click_x-490)/Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15;
+			float fixed_dy = (float) ((click_y-490) /Math.sqrt(click_x*click_x+click_y*click_y+0.1)) * 15;
+			attacks.add(new Attack(character_x, character_y,  (float) (fixed_dx/Math.sqrt(fixed_dx*fixed_dx+fixed_dy*fixed_dy)*15), (float) (fixed_dy/Math.sqrt(fixed_dx*fixed_dx+fixed_dy*fixed_dy)*15), final_atk));
 		}
 	}
 
@@ -415,6 +417,9 @@ public class Game extends ApplicationAdapter {
 		text_renderer = TextRenderer.getInstance();
 		enemies_batch = new SpriteBatch();
 		enemies = Enemies.getEnemies(0);
+
+
+		chill_2.loop(0.1f);
 	}
 
 	public void renderBackground() {
@@ -535,7 +540,7 @@ public class Game extends ApplicationAdapter {
 
 
 		if (next_level) {
-			chill_2.stop();
+//			chill_2.stop();
 			level++;
 			maploader.loadmap(level);
 			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
@@ -546,7 +551,6 @@ public class Game extends ApplicationAdapter {
 			health_initialized = false;
 			next_level = false;
 			level_start.play(0.5f);
-			chill_2.loop(0.1f);
 			enemies.dispose();
 			enemies = Enemies.getEnemies(level);
 		}
@@ -600,7 +604,9 @@ public class Game extends ApplicationAdapter {
 
 
 		//tiledmap_type_debug();
-
+		System.out.println(character_x/72);
+		System.out.println(character_y/72);
+		System.out.println("ayaya");
 		// rendering elements
 		if(!isDead) {
 			batch_character.draw(img_character, (int) character_x, (int) character_y);
@@ -613,10 +619,8 @@ public class Game extends ApplicationAdapter {
 			stamina_bar.draw(health_bar_outline, character_x + 331, character_y - 415);
 			text_renderer.draw(stamina_bar, ((int) stamina_cur) + "/" + ((int) stamina), character_x + 337, character_y - 398);
 			text_renderer.draw(stamina_bar, ((int) health_cur) + "/" + ((int) health), character_x + 337, character_y - 373);
-			text_renderer.draw3(stamina_bar, "Max Health:"+final_health, character_x + 337, character_y - 443);
-			text_renderer.draw3(stamina_bar, "Attack:"+final_atk, character_x + 637, character_y - 443);
-			text_renderer.draw3(stamina_bar, "Defense:"+final_def, character_x + 337, character_y - 488);
-			text_renderer.draw3(stamina_bar, "Max Stamina:"+final_stamina, character_x + 637, character_y - 488);
+			text_renderer.draw3(stamina_bar, "Attack:"+final_atk, character_x + 337, character_y - 443);
+			text_renderer.draw3(stamina_bar, "Defense:"+final_def, character_x + 637, character_y - 443);
 
 		}
 		// inventory
@@ -777,8 +781,8 @@ public class Game extends ApplicationAdapter {
 				if(Gdx.input.isTouched()) {
 					if (click_x > 490 + 833 && click_x < 490 + 833 + 65) {
 						if (click_y - 490 > 233 && click_y - 490 < 272) {
-							float stamina_add = 490f;
-							float health_add = 49f;
+							float stamina_add = stamina/20;
+							float health_add = health/20;
 							if(!inventory_dased) {
 								inventory_dased = true;
 								if(Inventory.Food_Inv[isp] > 0 && (stamina_cur < stamina || health_cur < health) ) {
@@ -909,6 +913,7 @@ public class Game extends ApplicationAdapter {
 									final_health = get_final_health(health_level);
 									health = final_health;
 									health_cur = health-tmp;
+									menu_select.play();
 								}
 							}else if(inventory_das <= 0 && inventory_arr == 12){
 								inventory_arr--;
@@ -1086,6 +1091,7 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
+
 		batch_character.dispose();
 		img_character.dispose();
 		batch_vignette.dispose();

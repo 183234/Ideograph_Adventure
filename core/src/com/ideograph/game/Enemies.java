@@ -56,14 +56,10 @@ public class Enemies {
                     Math.min(this.y + ENEMY_WIDTH, y + width) > Math.max(this.y, y);
         }
         public void resurrect(){
-
-            System.out.println("ayayaya");
-            System.out.println((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y));
-            if((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y) > 10000000 ){
+            if((this.x-Game.character_x)*(this.x-Game.character_x)+(this.y-Game.character_y)*(this.y-Game.character_y) > 4000000 ){
                 this.health = this.initial_health;
                 this.dead = false;
 
-                System.out.println("ayayaya");
             }
         }
 
