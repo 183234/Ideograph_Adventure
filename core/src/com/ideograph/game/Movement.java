@@ -129,10 +129,9 @@ public class Movement {
         if ((status & Status.ground) != 0) soft_jump_grace_period = 4;
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) && Game.stamina_cur > 0) {
             speed_factor = 2;
-            Game.stamina_cur--;
         }else speed_factor = 1;
-        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) Game.character_delta_x -= 1 * speed_factor;
-        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) Game.character_delta_x += 1 * speed_factor;
+        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {Game.character_delta_x -= 1 * speed_factor; Game.stamina_cur -= (speed_factor-1);}
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {Game.character_delta_x += 1 * speed_factor; Game.stamina_cur -= (speed_factor-1);}
 //        if (Gdx.input.isKeyPressed(Input.Keys.S)) Game.character_delta_y -= 1 * sprint;
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             if((status & Status.ground) != 0) {

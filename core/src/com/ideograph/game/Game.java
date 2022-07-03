@@ -77,6 +77,18 @@ public class Game extends ApplicationAdapter {
 	Texture inventory_UI;
 	Texture inventory_selected;
 	Texture cake_title;
+	Texture cookie_title;
+	Texture fries_title;
+	Texture juice_title;
+	Texture meat_title;
+	Texture pineapple_title;
+	Texture pizza_title;
+	Texture ramen_title;
+	Texture spaghetti_title;
+	Texture egg_title;
+	Texture sushi_title;
+	Texture taco_title;
+
 	float map_delta_x = 0;
 	float map_delta_y = 0;
 	float health = 100;
@@ -159,6 +171,19 @@ public class Game extends ApplicationAdapter {
 
 		//item titles
 		cake_title = new Texture("cake_title.png");
+		cookie_title = new Texture("cookie_title.png");
+		fries_title = new Texture("fries_title.png");
+		juice_title = new Texture("juice_title.png");
+		meat_title = new Texture("meat_title.png");
+
+		pineapple_title = new Texture("pineapple_title.png");
+		pizza_title = new Texture("pizza_title.png");
+		ramen_title = new Texture("ramen_title.png");
+		spaghetti_title = new Texture("spaghetti_title.png");
+		egg_title = new Texture("egg_title.png");
+
+		sushi_title = new Texture("sushi_title.png");
+		taco_title = new Texture("taco_title.png");
 
 		//maploader(?
 		maploader.loadmap(level);
@@ -358,6 +383,7 @@ public class Game extends ApplicationAdapter {
 		stamina_bar.draw(stamina_bar_bg, character_x + 335, character_y - 410);
 		stamina_bar.draw(stamina_region, character_x + 335, character_y - 410);
 		stamina_bar.draw(stamina_bar_outline, character_x + 331, character_y - 415);
+		text_renderer.draw(stamina_bar, ((int)stamina_cur)+"/"+((int)stamina), character_x+335, character_y-398);
 
 		// inventory
 		if (!inInventory) {
@@ -456,7 +482,47 @@ public class Game extends ApplicationAdapter {
 			inventory.draw(sunnyside_up_egg.item_texture, character_x + 300 + 43, character_y - 250 + 362 - 244);
 			inventory.draw(taco.item_texture, character_x + 300 + 43 + 102, character_y - 250 + 362 - 244);
 
-			inventory.draw(cake_title, character_x + 850, character_y + 5);
+			if(isp == 0) {
+				inventory.draw(sushi_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 1) {
+				inventory.draw(cake_title, character_x + 851, character_y + 5);
+			}
+			if(isp == 2) {
+				inventory.draw(cookie_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 3) {
+				inventory.draw(fries_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 4) {
+				inventory.draw(juice_title, character_x + 852, character_y + 5);
+			}
+
+			if(isp == 5) {
+				inventory.draw(meat_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 6) {
+				inventory.draw(pineapple_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 7) {
+				inventory.draw(pizza_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 8) {
+				inventory.draw(ramen_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 9) {
+				inventory.draw(spaghetti_title, character_x + 852, character_y + 5);
+			}
+
+			if(isp == 10) {
+				inventory.draw(egg_title, character_x + 852, character_y + 5);
+			}
+			if(isp == 11) {
+				inventory.draw(taco_title, character_x + 852, character_y + 5);
+			}
+
+
+
 
 
 //			System.out.println(selected_item);
