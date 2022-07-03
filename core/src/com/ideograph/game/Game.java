@@ -415,6 +415,7 @@ public class Game extends ApplicationAdapter {
 		text_renderer = TextRenderer.getInstance();
 		enemies_batch = new SpriteBatch();
 		enemies = Enemies.getEnemies(0);
+		chill_2.loop(0.1f);
 	}
 
 	public void renderBackground() {
@@ -535,7 +536,6 @@ public class Game extends ApplicationAdapter {
 
 
 		if (next_level) {
-			chill_1.stop();
 			level++;
 			maploader.loadmap(level);
 			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
@@ -546,7 +546,6 @@ public class Game extends ApplicationAdapter {
 			health_initialized = false;
 			next_level = false;
 			level_start.play(0.5f);
-			chill_2.loop(0.1f);
 			enemies.dispose();
 			enemies = Enemies.getEnemies(level);
 		}
@@ -781,7 +780,7 @@ public class Game extends ApplicationAdapter {
 									health_cur += health_add;
 									Inventory.Food_Inv[isp]--;
 									hint = 1;
-									consume.play();
+									consume.play(0.5f);
 								}else if(Inventory.Food_Inv[isp] == 0){
 									hint = 2;
 								}else{
