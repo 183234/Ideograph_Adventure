@@ -80,6 +80,7 @@ public class Enemies {
     }
 
     static Enemies getEnemies(int level){
+        level = level % 8;
         JsonReader reader = new JsonReader();
         JsonValue json_all = reader.parse(Gdx.files.internal("level/enemies_"+level+".json"));
         Enemies res = new Enemies();

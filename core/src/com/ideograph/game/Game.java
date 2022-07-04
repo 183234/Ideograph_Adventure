@@ -245,20 +245,17 @@ public class Game extends ApplicationAdapter {
 				this.dead = true;
 			}
 		}
-
-		public void render(){
-			move();
-		}
 	}
 
-	public void attack(boolean clicked){
+	public void attack(Enemies enemies, boolean clicked){
 		ArrayList<Attack> remove = new ArrayList<Attack>();
 		for(Attack attackkk : this.attacks){
-			attackkk.render();
+			attackkk.move();
 			if(attackkk.dead){
 				remove.add(attackkk);
 			}
 		}
+		enemies.be_attacked();
 		for(Attack atk : remove) {
 			this.attacks.remove(atk);
 		}
@@ -537,7 +534,7 @@ public class Game extends ApplicationAdapter {
 		attack_batch.begin();
 
 
-		if (next_level) {
+		if (next_level || Gdx.input.isKeyJustPressed(Input.Keys.P)) {
 			level++;
 			maploader.loadmap(level);
 			tiledMapRenderer = new OrthogonalTiledMapRenderer(MapLoader.map_current);
@@ -581,6 +578,10 @@ public class Game extends ApplicationAdapter {
 				stamina_initialized = false;
 				inInventory = false;
 			}
+		}
+
+		for(Attack attackkk : this.attacks){
+			attack_batch.draw(attack_texture, (int)attackkk.x, (int)attackkk.y);
 		}
 
 		// collision
@@ -854,6 +855,17 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
+		if(!isDead) {
+			if (Gdx.input.isTouched()) {
+				attack(enemies, true);
+			} else {
+				attack(enemies, false);
+			}
+		}
+
+		enemies.render(enemies_batch);
+		enemies.attack();
+
 		//upgrade
 
 		if(!isDead && !inInventory){
@@ -1047,42 +1059,15 @@ public class Game extends ApplicationAdapter {
 
 
 
-		if(!isDead) {
-			if (Gdx.input.isTouched()) {
-				attack(true);
-			} else {
-				attack(false);
-			}
-		}
-
-		for(Attack attackkk : this.attacks){
-			attack_batch.draw(attack_texture, (int)attackkk.x, (int)attackkk.y);
-		}
-
-		enemies.render(enemies_batch);
-		enemies.attack();
-		enemies.be_attacked();
-
-//		System.out.println(character_x/72);
-//		System.out.println(character_y/72);
-//		System.out.println("ayaya");
-
-
-
-
-		//tiledLayer.setCell();
-
-//		inventory.draw(dot, (character_x/72)*72, (character_y/72)*72 );
-
 		batch_character.end();
-		enemies_batch.end();
 		batch_vignette.end();
 		death_screen.end();
 		health_bar.end();
 		stamina_bar.end();
+		attack_batch.end();
 		inventory.end();
 		upgrade.end();
-		attack_batch.end();
+		enemies_batch.end();
 	}
 
 

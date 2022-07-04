@@ -9,9 +9,7 @@ public class MapLoader {
     public static TiledMap map_current;
 
     public void loadmap(int MapId) {
-        if (MapId > 6) {
-            MapId = 0;
-        }
+        MapId %= 8;
         String filename = "level/" + MapId + ".tmx";
         TiledMap map;
         if (map_current != null) {
